@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:mini_project/theApp_screans.dart/models/book.dart';
+
+
 
 class requestPAge extends StatefulWidget {
-  const requestPAge({super.key});
-
+  final Book book;
+  const requestPAge({super.key, required this.book});
   @override
   State<requestPAge> createState() => _requestPAgeState();
 }
- 
+
 class _requestPAgeState extends State<requestPAge> {
   String? selectedDurationType;
   int? selectedDuration;
-   // Show Submenu for Number Selection
+  // Show Submenu for Number Selection
   void _showSubMenu(BuildContext context, String type) async {
     int? selectedNumber = await showMenu<int>(
       context: context,
@@ -30,8 +33,11 @@ class _requestPAgeState extends State<requestPAge> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
+      final screenHeight =MediaQuery.of(context).size.height;
+      final screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -41,16 +47,15 @@ class _requestPAgeState extends State<requestPAge> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
-             Container(
-              height:MediaQuery.of(context).size.height*0.5,
-              width: MediaQuery.of(context).size.width*0.2,
-              decoration:BoxDecoration(
-               borderRadius: BorderRadius.all(Radius.circular(20)),
+            Container(
+              height: screenHeight * 0.5,
+              width:screenWidth* 0.2,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
               child: Image.asset("assets/img/history.jpg"),
-             ),
-             // Main DropdownButtonFormField
+            ),
+            // Main DropdownButtonFormField
             FractionallySizedBox(
               widthFactor: 0.9,
               child: DropdownButtonFormField<String>(
@@ -89,7 +94,5 @@ class _requestPAgeState extends State<requestPAge> {
       ),
     );
     // Show Submenu for Number Selection
-    
-    
   }
 }

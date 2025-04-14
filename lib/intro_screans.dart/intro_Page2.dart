@@ -3,11 +3,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+
+
 class IntroPage2 extends StatelessWidget {
   const IntroPage2({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight =MediaQuery.of(context).size.height;
+    final screenWidth =  MediaQuery.of(context).size.width;
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -18,21 +22,21 @@ class IntroPage2 extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center, // Center content vertically
         children: [
            SizedBox(
-              height: MediaQuery.of(context).size.height*0.15,
+              height: screenHeight*0.15,
             ),
             SvgPicture.asset(
             "assets/img/page2.svg",
-            height: MediaQuery.of(context).size.height*0.4,
-              width: MediaQuery.of(context).size.width*0.4,
+            height: screenHeight*0.4,
+              width: screenWidth*0.4,
               
           ),
            SizedBox(
-              height: MediaQuery.of(context).size.height*0.06,
+              height: screenHeight*0.06,
             ),// Add spacing
            Container(
           
-             height: MediaQuery.of(context).size.height*0.029,
-              width: MediaQuery.of(context).size.width*0.37,
+             height: screenHeight*0.029,
+              width: screenWidth*0.37,
               decoration: BoxDecoration(
                           borderRadius: BorderRadius.only(topRight: Radius.circular(12),bottomRight: Radius.circular(12),topLeft:Radius.circular(9)),
                           boxShadow: [
@@ -52,7 +56,7 @@ class IntroPage2 extends StatelessWidget {
                        ),
            ),
              SizedBox(
-              height: MediaQuery.of(context).size.height*0.04,
+              height: screenHeight*0.04,
             ),
            Center(
 

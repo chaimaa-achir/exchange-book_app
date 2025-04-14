@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mini_project/Authentication_sreans.dart/login.dart';
 import 'package:mini_project/Authentication_sreans.dart/verifyCode.dart';
-import 'package:mini_project/Cashdatasave/cashhelper.dart';
+import 'package:mini_project/shared/costumeelevatedBottom.dart';
 
 
 class Signupscrean extends StatefulWidget {
@@ -23,6 +23,8 @@ class _SignupscreanState extends State<Signupscrean> {
   String? email;
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         body: SizedBox(
@@ -34,7 +36,7 @@ class _SignupscreanState extends State<Signupscrean> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.03,
+                  height: screenHeight * 0.03,
                   //height: 20,
                 ),
                 Text(
@@ -54,9 +56,9 @@ class _SignupscreanState extends State<Signupscrean> {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.03,
+                  height: screenHeight * 0.03,
                 ),
-                    FractionallySizedBox(
+                FractionallySizedBox(
                   widthFactor: 0.9,
                   child: Text(
                     textAlign: TextAlign.left,
@@ -64,9 +66,9 @@ class _SignupscreanState extends State<Signupscrean> {
                     style: TextStyle(fontSize: 15, color: Colors.black54),
                   ),
                 ),
-                  SizedBox(
+                SizedBox(
                   width: MediaQuery.of(context).size.width * 0.9,
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: screenHeight * 0.05,
                   child: TextField(
                     controller: _fullnameController,
                     keyboardType: TextInputType.text,
@@ -92,9 +94,8 @@ class _SignupscreanState extends State<Signupscrean> {
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.9,
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: screenHeight * 0.05,
                   child: TextField(
-      
                     keyboardType: TextInputType.name,
                     decoration: InputDecoration(
                       contentPadding:
@@ -109,7 +110,7 @@ class _SignupscreanState extends State<Signupscrean> {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.004,
+                  height: screenHeight * 0.004,
                 ),
                 FractionallySizedBox(
                   widthFactor: 0.9,
@@ -121,7 +122,7 @@ class _SignupscreanState extends State<Signupscrean> {
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.9,
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: screenHeight * 0.05,
                   child: TextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -139,7 +140,7 @@ class _SignupscreanState extends State<Signupscrean> {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.004,
+                  height: screenHeight * 0.004,
                 ),
                 FractionallySizedBox(
                   widthFactor: 0.9,
@@ -151,7 +152,7 @@ class _SignupscreanState extends State<Signupscrean> {
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.9,
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: screenHeight * 0.05,
                   child: TextField(
                     keyboardType: TextInputType.emailAddress,
                     obscureText: _isPasswordVisible,
@@ -177,7 +178,7 @@ class _SignupscreanState extends State<Signupscrean> {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.004,
+                  height: screenHeight * 0.004,
                 ),
                 FractionallySizedBox(
                   widthFactor: 0.9,
@@ -189,7 +190,7 @@ class _SignupscreanState extends State<Signupscrean> {
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.9,
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: screenHeight * 0.05,
                   child: TextField(
                     keyboardType: TextInputType.emailAddress,
                     obscureText: true,
@@ -206,7 +207,7 @@ class _SignupscreanState extends State<Signupscrean> {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.0001,
+                  height: screenHeight * 0.0001,
                 ),
                 Row(
                   children: [
@@ -244,18 +245,14 @@ class _SignupscreanState extends State<Signupscrean> {
                   ],
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.025,
+                  height: screenHeight * 0.025,
                 ),
-                FractionallySizedBox(
-                  widthFactor: 0.9,
-                  child: ElevatedButton(
-                    onPressed: () async {
+              
+                 myelvatedbottom(
+                  text: "Sign up",
+                  onPressed:() async {
                       final String fullname = _fullnameController.text.trim();
                       final String emailUser = _emailController.text.trim();
-                      if (fullname.isNotEmpty) {
-                        await CacheData.setData(key: "fullname", value: fullname);
-                        
-                      }
 
                       if (emailUser.isNotEmpty && fullname.isNotEmpty) {
                         if (!context.mounted) return;
@@ -266,30 +263,10 @@ class _SignupscreanState extends State<Signupscrean> {
                                   Verifycode(email: emailUser)),
                         );
                       }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Color.fromARGB(255, 160, 107, 186), // Button color
-                      padding: EdgeInsets.all(8), // Padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(25), // Rounded corners
-                      ),
-                      elevation: 8, // Shadow effect
-                      shadowColor:
-                          Colors.deepPurple.withOpacity(0.9), // Shadow color
-                    ),
-                    child: Text(
-                      "Sign up",
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
+                    }, 
+                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.037,
+                  height: screenHeight * 0.037,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -312,7 +289,7 @@ class _SignupscreanState extends State<Signupscrean> {
                   ],
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.03,
+                  height: screenHeight * 0.03,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -332,7 +309,7 @@ class _SignupscreanState extends State<Signupscrean> {
                         ),
                         child: SvgPicture.asset(
                           "assets/img/google.svg",
-                          height: MediaQuery.of(context).size.height * 0.047,
+                          height: screenHeight * 0.047,
                           width: MediaQuery.of(context).size.width * 0.047,
                         ),
                       ),
@@ -355,7 +332,7 @@ class _SignupscreanState extends State<Signupscrean> {
                         ),
                         child: SvgPicture.asset(
                           "assets/img/apple.svg",
-                          height: MediaQuery.of(context).size.height * 0.047,
+                          height: screenHeight * 0.047,
                           width: MediaQuery.of(context).size.width * 0.047,
                         ),
                       ),
@@ -380,7 +357,7 @@ class _SignupscreanState extends State<Signupscrean> {
                           ),
                           child: SvgPicture.asset(
                             "assets/img/fac.svg",
-                            height: MediaQuery.of(context).size.height * 0.047,
+                            height: screenHeight * 0.047,
                             width: MediaQuery.of(context).size.width * 0.047,
                           ),
                         ),
@@ -389,7 +366,7 @@ class _SignupscreanState extends State<Signupscrean> {
                   ],
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.04,
+                  height: screenHeight * 0.04,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -412,6 +389,9 @@ class _SignupscreanState extends State<Signupscrean> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14))),
                   ],
+                ),
+                SizedBox(
+                  height: screenHeight * 0.1,
                 ),
               ],
             ),

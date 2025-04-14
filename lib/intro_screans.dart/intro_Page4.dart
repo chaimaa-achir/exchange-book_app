@@ -6,12 +6,14 @@ class IntroPage4 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+      final screenHeight =MediaQuery.of(context).size.height;
+    final screenWidth =  MediaQuery.of(context).size.width;
     return Container(
       color: const Color.fromARGB(255, 253, 247, 242),
       child: SvgPicture.asset(
       "assets/img/page4.svg",
-        height: MediaQuery.of(context).size.height*0.99,
-        width: MediaQuery.of(context).size.height*0.99,
+        height: screenHeight*0.99,
+        width:  screenWidth*0.99,
                 ),
     );
   }

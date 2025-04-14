@@ -1,10 +1,14 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:mini_project/shared/costumeelevatedBottom.dart';
+import 'package:mini_project/theApp_screans.dart/navigationbottombar.dart';
 import 'package:mini_project/theApp_screans.dart/screans/home.dart';
 //import 'package:mini_project/theApp_screans.dart/home_page.dart';
 
 import 'package:pin_code_fields/pin_code_fields.dart';
+
+
 
 class Verifycode extends StatefulWidget {
   final String email;
@@ -19,6 +23,8 @@ final TextEditingController _otpcontroller = TextEditingController();
 class _VerifyCodeState extends State<Verifycode> {
   @override
   Widget build(BuildContext context) {
+      final screenHeight = MediaQuery.of(context).size.height;
+  final screenWidth =MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(),
@@ -29,7 +35,7 @@ class _VerifyCodeState extends State<Verifycode> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.05,
+                height:screenHeight  * 0.05,
                 //height: 20,
               ),
               Text(
@@ -54,7 +60,7 @@ class _VerifyCodeState extends State<Verifycode> {
                     fontWeight: FontWeight.w500),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.08,
+                height: screenHeight  * 0.08,
               ),
               PinCodeTextField(
                 controller: _otpcontroller,
@@ -83,7 +89,7 @@ class _VerifyCodeState extends State<Verifycode> {
                 onChanged: (value) {},
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.03,
+                height: screenHeight  * 0.03,
               ),
               Text(
                 "didn't receive the OTP?",
@@ -92,7 +98,7 @@ class _VerifyCodeState extends State<Verifycode> {
               ),
               GestureDetector(onTap: () {}, child: Text("Resend code")),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.03,
+                height: screenHeight  * 0.03,
               ),
               FractionallySizedBox(
                 widthFactor: 0.9,
@@ -131,6 +137,22 @@ class _VerifyCodeState extends State<Verifycode> {
                   ),
                 ),
               ),
+            /*  myelvatedbottom(
+                text: "Verify",
+                onPressed:  () async {
+                    String optenter = _otpcontroller.text;
+                    if (optenter.isEmpty || optenter.length < 6) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Please enter a valid Code')));
+                      return;
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Navigationbar()),
+                      );
+                    }
+                  },
+              ),*/
             ],
           ),
         ),

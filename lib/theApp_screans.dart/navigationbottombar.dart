@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:mini_project/theApp_screans.dart/screans/add.dart';
+import 'package:mini_project/theApp_screans.dart/screans/add-book.dart';
+import 'package:mini_project/theApp_screans.dart/screans/add-forum.dart';
+import 'package:mini_project/theApp_screans.dart/screans/community.dart';
 import 'package:mini_project/theApp_screans.dart/screans/home.dart';
-
+import 'package:mini_project/theApp_screans.dart/screans/meesagePage.dart';
+import 'package:mini_project/theApp_screans.dart/screans/save.dart';
 
 class Navigationbar extends StatefulWidget {
   const Navigationbar({super.key});
@@ -18,89 +21,124 @@ class _NavigationbarState extends State<Navigationbar> {
 
   void _onItemTapped(int index) {
     setState(() {
-        _intPage = index;
-    _selectedIndex = index;
+      _intPage = index;
+      _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return SafeArea(
       child: Scaffold(
-       body:IndexedStack(
-         children: [
-           if(_intPage==0)
-           Homesrean(),
-          
-           
-         ],
-       ),
-        
-        extendBody:
-            true, // Ensures the floating button overlaps navigation bar correctly
+        body: IndexedStack(
+          index: _intPage,
+          children: [
+            Homesrean(),
+            savePage(),
+            Container(),
+            CommunityScreen(),
+            MeesagePage(),
+          ],
+        ),
+
+        extendBody:  true, // Ensures the floating button overlaps navigation bar correctly
         floatingActionButton: Container(
-          height: MediaQuery.of(context).size.height * 0.065,
+          height: screenHeight * 0.065,
           margin: const EdgeInsets.only(top: 20), // Adjust for proper placement
           child: FloatingActionButton(
-            onPressed: () {
-                Navigator.push(
-                             context,
-                          MaterialPageRoute(builder: (context) => Addbookscrean()),
-                               );
-            },
-            backgroundColor: const Color.fromARGB(255, 230, 171, 255),
+            onPressed: () => _showBottomSheet(context),
+            backgroundColor: Color(0xFFB8A4E0),
             shape: const CircleBorder(),
             elevation: 5,
             child: const Icon(Icons.add, color: Colors.black, size: 30),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: CurvedNavigationBar(
-          key: _curvedNavigationKey,
-          index: _selectedIndex,
-          height: 65,
+        bottomNavigationBar:BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          selectedLabelStyle: TextStyle(fontSize: 10),
+          unselectedLabelStyle: TextStyle(fontSize: 10),
+          selectedItemColor: Color.fromARGB(255, 160, 107, 186),
+          unselectedItemColor: Colors.grey,
+          
+          showUnselectedLabels: true,
+          onTap: _onItemTapped,
           items: [
             _buildNavItem(Icons.home_outlined, "Home", 0),
             _buildNavItem(Icons.bookmark_outline, "Saved", 1),
-            const SizedBox.shrink(), // Empty space for FAB
+            const BottomNavigationBarItem(
+              icon: SizedBox.shrink(), // Empty space for FAB
+              label: "",
+            ),
             _buildNavItem(Icons.question_answer_outlined, "Community", 3),
             _buildNavItem(Icons.email_outlined, "Messages", 4),
           ],
-          animationCurve: Curves.easeInOut,
-          animationDuration: const Duration(milliseconds: 600),
-          color: Color.fromARGB(255, 160, 107, 186),
-          backgroundColor: Colors.white,
-          buttonBackgroundColor: Colors.white,
-          onTap: (index) {
-            setState(() {
-              _intPage = index;
-              
-            });
-          },
-          letIndexChange:(index)=>true ,
+          
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, int index) {
-    return GestureDetector(
-      onTap: () => _onItemTapped(index),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon,
-              size: 30,
-              color: _selectedIndex == index ? Colors.black : Colors.black),
-          Text(label,
-              style: TextStyle(
-                  fontSize: 9,
-                  color:
-                      _selectedIndex == index ? Colors.black : Colors.black)),
-        ],
-      ),
-      
+  BottomNavigationBarItem _buildNavItem(IconData icon, String label, int index) {
+    return BottomNavigationBarItem(
+      icon: Icon(icon, size: 30),
+      label: label,
     );
-    
+  }
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      backgroundColor: Colors.white,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildOption(Icons.book, "Book",
+                  "Share a book and spread knowledge ", Colors.purple),
+              Divider(),
+              _buildOption(Icons.forum, "Forum",
+                  "Share topics with the community", Colors.orange),
+              Divider(),
+              Text(
+                textAlign: TextAlign.center,
+                "📤 Please choose what you want to post",
+                style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildOption(
+      IconData icon, String title, String subtitle, Color color) {
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: color.withOpacity(0.2),
+        child: Icon(icon, color: color),
+      ),
+      title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+      subtitle: Text(subtitle),
+      onTap: () {
+        if (title == "Book") {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => Addbookscrean()));
+        } else if (title == "Forum") {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => AddForumScreen()));
+        }
+      },
+    );
   }
 }

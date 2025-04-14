@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mini_project/Authentication_sreans.dart/signupscrean.dart';
+import 'package:mini_project/shared/costumeelevatedBottom.dart';
+
 
 
 class Loginscrean extends StatefulWidget {
@@ -13,9 +15,12 @@ class Loginscrean extends StatefulWidget {
 }
 
 class _LoginscreanState extends State<Loginscrean> {
+
   bool _isPasswordVisible = true;
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+  final screenWidth =MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         body: SizedBox(
@@ -28,7 +33,7 @@ class _LoginscreanState extends State<Loginscrean> {
                   
               children: [
                    SizedBox(
-                height: MediaQuery.of(context).size.height *0.150,
+                height: screenHeight *0.150,
                 //height: 20,
                 ),
                 Text(
@@ -46,7 +51,7 @@ class _LoginscreanState extends State<Loginscrean> {
                       color: Color.fromARGB(255, 139, 139, 139), fontSize: 12),
                 ),
                 SizedBox(
-                height: MediaQuery.of(context).size.height *0.06,
+                height: screenHeight *0.06,
                 
                 ),
                 FractionallySizedBox(
@@ -58,8 +63,8 @@ class _LoginscreanState extends State<Loginscrean> {
                   ),
                 ),
               SizedBox(
-                  width: MediaQuery.of(context).size.width *0.9,
-                  height: MediaQuery.of(context).size.height *0.05,
+                  width:screenWidth *0.9,
+                  height: screenHeight *0.05,
                   child: TextField(
                   
                     keyboardType: TextInputType.emailAddress,
@@ -79,7 +84,7 @@ class _LoginscreanState extends State<Loginscrean> {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height *0.02
+                  height: screenHeight *0.02
                 ),
                 FractionallySizedBox(
                   widthFactor:0.9,
@@ -91,8 +96,8 @@ class _LoginscreanState extends State<Loginscrean> {
                 ),
                 SizedBox(
                   
-                  width: MediaQuery.of(context).size.width *0.9,
-                  height: MediaQuery.of(context).size.height *0.05,
+                  width:screenWidth *0.9,
+                  height: screenHeight *0.05,
                   child: TextField(
                     
                     keyboardType: TextInputType.emailAddress,
@@ -123,7 +128,7 @@ class _LoginscreanState extends State<Loginscrean> {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height*0.0090,
+                  height: screenHeight*0.0090,
                 ),
                 FractionallySizedBox(
                   widthFactor: 0.9,
@@ -135,34 +140,20 @@ class _LoginscreanState extends State<Loginscrean> {
                     )),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height*0.05,
+                  height: screenHeight*0.05,
                 ),
-                FractionallySizedBox(
-                  widthFactor:0.9,
-                  child: ElevatedButton(onPressed: (){},
-                   style:  ElevatedButton.styleFrom(
-                   backgroundColor: Color.fromARGB(255, 160, 107, 186), // Button color
-                   padding: EdgeInsets.all(8), // Padding
-                    shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25), // Rounded corners
-                 ),
-               elevation: 8, // Shadow effect
-               shadowColor: Colors.deepPurple.withOpacity(0.9), // Shadow color
-                ),
-                   child: Text(
-                    "Log in",
-                    style: TextStyle(fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold),
-                    ),
-                   ),
+                myelvatedbottom(
+                  text:"Log in",
+                  onPressed: (){},
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height*0.04,
+                  height: screenHeight*0.04,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                   SizedBox(
-                     width: MediaQuery.of(context).size.width*0.31,
+                     width:screenWidth*0.31,
                       child: Divider(
                         thickness:1,
                         color: Colors.black54
@@ -178,7 +169,7 @@ class _LoginscreanState extends State<Loginscrean> {
                       
                     ),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width*0.31,
+                        width:screenWidth*0.31,
                       child: Divider(
                         thickness:1,
                         color: Colors.black54
@@ -187,7 +178,7 @@ class _LoginscreanState extends State<Loginscrean> {
                   ],
                 ),
                  SizedBox(
-                  height: MediaQuery.of(context).size.height*0.03,
+                  height: screenHeight*0.03,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -209,13 +200,13 @@ class _LoginscreanState extends State<Loginscrean> {
                         ),
                         child: SvgPicture.asset(
                           "assets/img/google.svg",
-                          height:MediaQuery.of(context).size.height* 0.047,
-                          width: MediaQuery.of(context).size.width* 0.047,
+                          height:screenHeight* 0.047,
+                          width:screenWidth* 0.047,
                           ),
                       ),
                     ),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width* 0.12,
+                        width:screenWidth* 0.12,
                       ),
                     InkWell(
                       onTap:(){},
@@ -234,13 +225,13 @@ class _LoginscreanState extends State<Loginscrean> {
                         ),
                         child: SvgPicture.asset(
                           "assets/img/apple.svg",
-                          height:MediaQuery.of(context).size.height*  0.047,
-                          width: MediaQuery.of(context).size.width* 0.047,
+                          height:screenHeight*  0.047,
+                          width:screenWidth* 0.047,
                         ),
                       ),
                     ),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width* 0.12,
+                        width:screenWidth* 0.12,
                       ), 
                     InkWell(
                       onTap:(){},
@@ -261,8 +252,8 @@ class _LoginscreanState extends State<Loginscrean> {
                         ),
                           child: SvgPicture.asset(
                           "assets/img/fac.svg",
-                            height:MediaQuery.of(context).size.height*  0.047,
-                            width: MediaQuery.of(context).size.width* 0.047,
+                            height:screenHeight*  0.047,
+                            width:screenWidth* 0.047,
                           ),
                         ),
                       ),
@@ -270,7 +261,7 @@ class _LoginscreanState extends State<Loginscrean> {
                   ],
                 ),
                  SizedBox(
-                  height: MediaQuery.of(context).size.height*0.06,
+                  height: screenHeight*0.06,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mini_project/Cashdatasave/cashhelper.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/Booksdispalyhome.dart';
-import 'package:http/http.dart';
-import 'dart:convert';
+import 'package:mini_project/theApp_screans.dart/widgets/catigory-display.dart';
+//import 'package:http/http.dart';
+//import 'dart:convert';
 import 'package:mini_project/theApp_screans.dart/widgets/catigorybutton.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/searchbar.dart';
+import 'package:mini_project/theApp_screans.dart/widgets/userdisplayhome.dart';
+
+
 
 class Homesrean extends StatefulWidget {
   const Homesrean({super.key});
@@ -17,25 +20,24 @@ class _HomesreanState extends State<Homesrean> {
   List<String> allItems = [];
 
   Map recivedata = {};
-  final SearchController _searchController = SearchController();
-  String fullname = "guste";
+   late SearchController _searchController = SearchController();
   @override
   void initState() {
     super.initState();
-    fetchUsers();
-    getFullname();
+    //fetchUsers();
+    
+    _searchController = SearchController();
     
   }
-
-  Future<void> getFullname() async {
-    await CacheData.cacheInitialisations();
-    String fullName = await CacheData.getData(key: "fullname");
-    setState(() {
-      fullname = fullName;
-    });
+    @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
-void fetchUsers() async {
+
+
+/*void fetchUsers() async {
    void fetchUsers() async {
   try {
     Response response = await get(Uri.parse('https://books-paradise.onrender.com/search/get-user/hanane'))
@@ -52,15 +54,18 @@ void fetchUsers() async {
   }
 }
 
-}
+}*/
 
   @override
   Widget build(BuildContext context) {
+     final screenHeight = MediaQuery.of(context).size.height;
+     final screenWidth =MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Color(0xFFFDFDFF),
         appBar: AppBar(
-          toolbarHeight: MediaQuery.of(context).size.height * 0.13,
-          backgroundColor: Color.fromARGB(255, 255, 221, 230),
+          toolbarHeight: screenHeight * 0.13,
+          backgroundColor: Color.fromARGB(255, 230, 221, 255),
           elevation: 0,
           title: Column(
             children: [
@@ -69,12 +74,16 @@ void fetchUsers() async {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      " Welcome,$fullname ",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold),
+                    Expanded(
+                      child: Text(
+                        " Welcome,FullName full namee ",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     Row(
                       children: [
@@ -87,7 +96,7 @@ void fetchUsers() async {
                           ),
                         ),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.03,
+                          width:screenWidth * 0.03,
                         ),
                         InkWell(
                           onTap: () {},
@@ -122,7 +131,7 @@ void fetchUsers() async {
                 ),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.007,
+                height: screenHeight * 0.007,
               ),
               FractionallySizedBox(
                 widthFactor: 0.90,
@@ -141,65 +150,40 @@ void fetchUsers() async {
             child: Column(
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.018,
+                  height: screenHeight * 0.018,
                 ),
                 CustomSearchBar(
                   searchController: _searchController,
                   allItems: allItems,
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.02,
+                  height: screenHeight * 0.02,
                 ),
                 FractionallySizedBox(
                     widthFactor: 0.9,
-                    child: Text(
+                    child: const Text(
                       "Categories",
                       style: TextStyle(
-                          color: Colors.black,
+                          color: Color(0xFF1A1A1A),
                           fontSize: 17,
                           fontWeight: FontWeight.w400),
                     )),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.01,
+                  height: screenHeight * 0.01,
                 ),
-                FractionallySizedBox(
-                  widthFactor: 0.9,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        Catigorybutton(
-                          title: "history",
-                          ontap: () {},
-                        ),
-                        Catigorybutton(
-                          title: "history",
-                          ontap: () {},
-                        ),
-                        Catigorybutton(
-                          title: "history",
-                          ontap: () {},
-                        ),
-                        Catigorybutton(
-                          title: "history",
-                          ontap: () {},
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                Catigorydisplay(),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.02,
+                  height: screenHeight * 0.02,
                 ),
                 FractionallySizedBox(
                   widthFactor: 0.9,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                    const   Text(
                         "Most requested books",
                         style: TextStyle(
-                            color: Colors.black,
+                            color: Color(0xFF1A1A1A),
                             fontSize: 16,
                             fontWeight: FontWeight.w400),
                       ),
@@ -207,7 +191,7 @@ void fetchUsers() async {
                         onTap: () {},
                         child: Row(
                           children: [
-                            Text(
+                          const  Text(
                               "All",
                               style: TextStyle(fontSize: 14),
                             ),
@@ -224,10 +208,10 @@ void fetchUsers() async {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                    const  Text(
                         "Books Near you",
                         style: TextStyle(
-                            color: Colors.black,
+                            color: Color(0xFF1A1A1A),
                             fontSize: 16,
                             fontWeight: FontWeight.w400),
                       ),
@@ -235,7 +219,7 @@ void fetchUsers() async {
                         onTap: () {},
                         child: Row(
                           children: [
-                            Text(
+                          const  Text(
                               "All",
                               style: TextStyle(fontSize: 14),
                             ),
@@ -252,38 +236,10 @@ void fetchUsers() async {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Top books",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      InkWell(
-                        onTap: () {},
-                        child: Row(
-                          children: [
-                            Text(
-                              "All",
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            Icon(Icons.chevron_right),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Bookdispalyhome(),
-                FractionallySizedBox(
-                  widthFactor: 0.9,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
+                    const  Text(
                         "Top users",
                         style: TextStyle(
-                            color: Colors.black,
+                            color: Color(0xFF1A1A1A),
                             fontSize: 16,
                             fontWeight: FontWeight.w400),
                       ),
@@ -291,7 +247,35 @@ void fetchUsers() async {
                         onTap: () {},
                         child: Row(
                           children: [
-                            Text(
+                          const  Text(
+                              "All",
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            Icon(Icons.chevron_right),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Userdisplayhome(),
+                FractionallySizedBox(
+                  widthFactor: 0.9,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Top books",
+                        style: TextStyle(
+                            color:Color(0xFF1A1A1A),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      InkWell(
+                        onTap: () {},
+                        child: Row(
+                          children: [
+                          const   Text(
                               "All",
                               style: TextStyle(fontSize: 14),
                             ),
@@ -303,6 +287,7 @@ void fetchUsers() async {
                   ),
                 ),
                 Bookdispalyhome(),
+              
               ],
             ),
           ),

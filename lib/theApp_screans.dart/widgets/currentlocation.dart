@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+
 
 class CurrentUserLocation extends StatefulWidget {
   const CurrentUserLocation({super.key});
@@ -83,6 +85,8 @@ class _CurrentUserLocationState extends State<CurrentUserLocation> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+      final screenWidth = MediaQuery.of(context).size.width;
     return Stack(
       children: [
         GoogleMap(
@@ -95,11 +99,11 @@ class _CurrentUserLocationState extends State<CurrentUserLocation> {
           },
         ),
         Positioned(
-          bottom: MediaQuery.of(context).size.width * 0.02,
-          right: MediaQuery.of(context).size.width * 0.009,
+          bottom:screenWidth* 0.02,
+          right:screenWidth* 0.009,
           child: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.04,
-            width: MediaQuery.of(context).size.width * 0.35,
+            height: screenHeight * 0.04,
+            width:screenWidth* 0.35,
             child: FloatingActionButton.extended(
               onPressed: isLoading ? null : _determinePosition,
               label: isLoading
@@ -112,4 +116,4 @@ class _CurrentUserLocationState extends State<CurrentUserLocation> {
       ],
     );
   }
-}
+}*/

@@ -45,6 +45,12 @@ dependencies:
   dotted_border: ^2.1.0
   geolocator: ^10.1.0
   google_maps_flutter: ^2.5.0
+  provider: ^6.1.2
+  file_picker: ^9.2.3 
+  auto_size_text: ^3.0.0
+  
+  
+
   
 dev_dependencies:
   flutter_test:
@@ -71,14 +77,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/img/google.svg
-    - assets/img/fac.svg
-    - assets/img/apple.svg
-    - assets/img/page1.svg
-    - assets/img/page2.svg
-    - assets/img/page3.svg
-    - assets/img/page4.svg
-    - assets/img/history.jpg
+    - assets/img/
+    
+    
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

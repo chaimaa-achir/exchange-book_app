@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+
+
 class CustomSearchBar extends StatelessWidget {
    final SearchController searchController;
   final List<String> allItems;
@@ -7,11 +9,13 @@ class CustomSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+      final screenWidth = MediaQuery.of(context).size.width;
     return SearchAnchor(
       searchController: searchController,
       builder: (context, controller) {
         return SizedBox(
-          height: MediaQuery.of(context).size.height*0.05,
+          height:screenHeight*0.05,
           width: MediaQuery.of(context).size.width*0.9,
           child: SearchBar(
             controller: searchController,

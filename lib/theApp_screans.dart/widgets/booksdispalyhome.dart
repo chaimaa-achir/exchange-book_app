@@ -1,50 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:mini_project/theApp_screans.dart/models/book.dart';
+import 'package:mini_project/theApp_screans.dart/screans/book-details.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/bookcard.dart';
 
 
 class Bookdispalyhome extends StatelessWidget {
-  Bookdispalyhome({super.key});
-  final List<Book> books = [
-    Book(
-      booktitel: "harry potter",
-      ownername: "chaima_moonlight",
-      bookimage: "assets/img/history.jpg",
-      ownerimage: "assets/img/history.jpg",
-      bookstatus: "Borrow",
-      distence: "3.8km",
-      rating: 9,
-    ),
-    Book(
-      booktitel: "evil under the sun",
-      ownername: "hadji_asheer",
-      bookimage: "assets/img/history.jpg",
-      ownerimage: "assets/img/history.jpg",
-      bookstatus:"Exchange",
-      distence: "12m",
-      rating: 7,
-    ),
-      Book(
-      booktitel: "فجر اسلام ",
-      ownername: "halloula20",
-      bookimage: "assets/img/history.jpg",
-      ownerimage: "assets/img/history.jpg",
-      bookstatus:"Sale",
-      distence: "5.9km",
-      rating: 7,
-    ),
-  ];
+  const Bookdispalyhome({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.26,
+      height: screenHeight * 0.24,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: books.length,
           itemBuilder: (context, index) {
             return Bookcard(
-              ontapbook: () {},
+              ontapbook: () {
+                       Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BookDetails (
+                  book: books[index],
+                  ),
+                ),
+              );
+              },
               ontapowner: () {},
               book: books[index],
             );

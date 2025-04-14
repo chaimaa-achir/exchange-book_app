@@ -1,24 +1,41 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
+import 'package:mini_project/helpers/time_utils.dart';
+import 'package:mini_project/shared/costumeelevatedBottom.dart';
 import 'package:mini_project/theApp_screans.dart/models/book.dart';
 import 'package:mini_project/theApp_screans.dart/screans/request-screen.dart';
-import 'package:mini_project/theApp_screans.dart/widgets/currentlocation.dart';
+//import 'package:mini_project/theApp_screans.dart/widgets/currentlocation.dart';
+import 'package:provider/provider.dart';
+import 'package:mini_project/theApp_screans.dart/providers/saved-books-provider.dart';
+
+
 
 class BookDetails extends StatefulWidget {
-  const BookDetails({super.key});
-  //final Book book;
+  final Book book;
 
+  const BookDetails({
+    super.key,
+    required this.book,
+  });
   @override
   State<BookDetails> createState() => _BookDetailsState();
 }
 
 class _BookDetailsState extends State<BookDetails> {
+  
+  
   @override
   Widget build(BuildContext context) {
+      final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+     final savedBooksProvider = Provider.of<SavedBooksProvider>(context);
+    final isSaved = savedBooksProvider.isSaved(widget.book);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("book title"),
-          elevation: 15,
+          title: Text(widget.book.booktitel),
+          elevation: 18,
           actions: [
             IconButton(
                 onPressed: () {},
@@ -35,8 +52,8 @@ class _BookDetailsState extends State<BookDetails> {
               SizedBox(
                   width: double.infinity,
                   child: Image.asset(
-                    "assets/img/history.jpg",
-                    height: MediaQuery.of(context).size.height * 0.3,
+                    widget.book.bookimage,
+                    height: screenHeight * 0.3,
                     fit: BoxFit.cover,
                   )),
               Padding(
@@ -51,7 +68,14 @@ class _BookDetailsState extends State<BookDetails> {
                       style: TextStyle(fontSize: 12),
                     ),
                     IconButton(
-                        onPressed: () {}, icon: Icon(Icons.bookmark_outline)),
+                        onPressed: () {
+                          setState(() {
+                            savedBooksProvider.toggleSaveBook(widget.book);
+                          });
+                        },
+                        icon: Icon(isSaved
+                            ? Icons.bookmark
+                            : Icons.bookmark_outline)),
                     Text(
                       "Save",
                       style: TextStyle(fontSize: 12),
@@ -68,39 +92,44 @@ class _BookDetailsState extends State<BookDetails> {
                         children: [
                           CircleAvatar(
                             radius: 30,
-                            backgroundImage: AssetImage("assets/img/history.jpg"),
+                            backgroundImage: AssetImage(widget.book.ownerimage),
                           ),
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.05,
+                            width:  screenWidth * 0.05,
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "username",
+                                widget.book.ownername,
                                 style: TextStyle(fontSize: 15),
                                 textAlign: TextAlign.start,
                               ),
-                              Text(
-                                "Book title Book title ",
-                                style: TextStyle(fontSize: 25),
-                                textAlign: TextAlign.start,
+                              Center(
+                                child: Text(
+                                  widget.book.booktitel,
+                                  style: TextStyle(fontSize: 25),
+                                  textAlign: TextAlign.start,
+                                ),
                               ),
                               Text(
-                                "add in 26 minutens",
-                                style: TextStyle(fontSize: 9,color: const Color.fromARGB(255, 74, 72, 72)),
+                                "added in ${timeAgo(widget.book.postDate)}" ,
+                                style: TextStyle(
+                                    fontSize: 9,
+                                    color:
+                                        const Color.fromARGB(255, 74, 72, 72)),
                               )
                             ],
                           )
                         ],
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.03,
+                        height: screenHeight * 0.03,
                       ),
-                      Text(
-                          "description of the book description of the book description of the bookdescription of the bookdescription of the book "),
+                      if (widget.book.description != null)
+                        Text(widget.book.description!),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.03,
+                        height: screenHeight * 0.03,
                       ),
                       /*  if (widget.book.bookstatus == "Lending") ...[
                         Text(
@@ -108,66 +137,53 @@ class _BookDetailsState extends State<BookDetails> {
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          "10 days",
+                          "for 10 days",
                           style: TextStyle(color: Colors.grey),
                         ),
                         SizedBox(height: 20),
-                      ],
-                  */
-                   /*  if (widget.book.bookstatus == "Sale") ...[
+                      ],*/
+
+                      if (widget.book.bookstatus == "Sale") ...[
                         Text(
                           "Book price ",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          "1000 DA",
+                          "${widget.book.price} DA",
                           style: TextStyle(color: Colors.grey),
                         ),
                         SizedBox(height: 20),
                       ],
-                  */
                       Text(
                         "Location",
-                        style:
-                            TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ]),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.29,
-                width: MediaQuery.of(context).size.width * 0.95,
-                child: CurrentUserLocation(),
+                height: screenHeight * 0.29,
+                width:  screenWidth * 0.95,
+                //child: CurrentUserLocation(),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height*0.05,
+                height: screenHeight * 0.05,
               ),
-              FractionallySizedBox(
-                widthFactor: 0.9,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
+              myelvatedbottom (
+                onPressed: widget.book.availability
+                      ? () {
+                          /* Navigator.push(
                              context,
-                          MaterialPageRoute(builder: (context) =>requestPAge ()),
-                               );
-                  },
-                    style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color.fromARGB(
-                                      255, 160, 107, 186), // Button color
-                                  padding: EdgeInsets.all(8), // Padding
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        25), // Rounded corners
-                                  ),
-                                  elevation: 8, // Shadow effect
-                                  shadowColor: Colors.deepPurple
-                                      .withOpacity(0.9), // Shadow color
-                                ),
-                   child: Text("Request this",style:TextStyle(color: Colors.white,fontSize:17),),),
-                   
+                          MaterialPageRoute(builder: (context) =>requestPAge (book: books[],)),
+                               );*/
+                        }
+                      : null,
+                      text: "Request this", // Disabled when false,
               ),
-                SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.07,
-                          ),
+              SizedBox(
+                height: screenHeight * 0.07,
+              ),
             ],
           ),
         ),
