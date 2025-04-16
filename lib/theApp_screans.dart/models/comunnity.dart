@@ -69,13 +69,13 @@ List<Community> communitylist = [
            replies: [
         Comment(
           userName: "Alice",
-          userImageUrl: "assets/images/user1.png",
+          userImageUrl: "assets/img/history.jpg",
           text: "Thank you!",
           timestamp: DateTime.now().subtract(Duration(minutes: 20)),
         ),
         Comment(
           userName: "Jhosef",
-          userImageUrl: "assets/images/user1.png",
+          userImageUrl: "assets/img/history.jpg",
           text: "Thank you!",
           timestamp: DateTime.now().subtract(Duration(minutes: 20)),
         ),

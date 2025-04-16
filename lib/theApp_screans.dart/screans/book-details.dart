@@ -5,11 +5,10 @@ import 'package:mini_project/helpers/time_utils.dart';
 import 'package:mini_project/shared/costumeelevatedBottom.dart';
 import 'package:mini_project/theApp_screans.dart/models/book.dart';
 import 'package:mini_project/theApp_screans.dart/screans/request-screen.dart';
+import 'package:mini_project/theApp_screans.dart/widgets/report_dailog.dart';
 //import 'package:mini_project/theApp_screans.dart/widgets/currentlocation.dart';
 import 'package:provider/provider.dart';
 import 'package:mini_project/theApp_screans.dart/providers/saved-books-provider.dart';
-
-
 
 class BookDetails extends StatefulWidget {
   final Book book;
@@ -23,13 +22,11 @@ class BookDetails extends StatefulWidget {
 }
 
 class _BookDetailsState extends State<BookDetails> {
-  
-  
   @override
   Widget build(BuildContext context) {
-      final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-     final savedBooksProvider = Provider.of<SavedBooksProvider>(context);
+    final savedBooksProvider = Provider.of<SavedBooksProvider>(context);
     final isSaved = savedBooksProvider.isSaved(widget.book);
     return SafeArea(
       child: Scaffold(
@@ -38,7 +35,11 @@ class _BookDetailsState extends State<BookDetails> {
           elevation: 18,
           actions: [
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  showReportOptions(context, (selectedReason) {
+                    print("the reason:$selectedReason");
+                  });
+                },
                 icon: Icon(
                   Icons.flag_outlined,
                   size: 30,
@@ -73,9 +74,8 @@ class _BookDetailsState extends State<BookDetails> {
                             savedBooksProvider.toggleSaveBook(widget.book);
                           });
                         },
-                        icon: Icon(isSaved
-                            ? Icons.bookmark
-                            : Icons.bookmark_outline)),
+                        icon: Icon(
+                            isSaved ? Icons.bookmark : Icons.bookmark_outline)),
                     Text(
                       "Save",
                       style: TextStyle(fontSize: 12),
@@ -95,7 +95,7 @@ class _BookDetailsState extends State<BookDetails> {
                             backgroundImage: AssetImage(widget.book.ownerimage),
                           ),
                           SizedBox(
-                            width:  screenWidth * 0.05,
+                            width: screenWidth * 0.05,
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +113,7 @@ class _BookDetailsState extends State<BookDetails> {
                                 ),
                               ),
                               Text(
-                                "added in ${timeAgo(widget.book.postDate)}" ,
+                                "added in ${timeAgo(widget.book.postDate)}",
                                 style: TextStyle(
                                     fontSize: 9,
                                     color:
@@ -164,22 +164,22 @@ class _BookDetailsState extends State<BookDetails> {
               ),
               SizedBox(
                 height: screenHeight * 0.29,
-                width:  screenWidth * 0.95,
+                width: screenWidth * 0.95,
                 //child: CurrentUserLocation(),
               ),
               SizedBox(
                 height: screenHeight * 0.05,
               ),
-              myelvatedbottom (
+              myelvatedbottom(
                 onPressed: widget.book.availability
-                      ? () {
-                          /* Navigator.push(
+                    ? () {
+                        /* Navigator.push(
                              context,
                           MaterialPageRoute(builder: (context) =>requestPAge (book: books[],)),
                                );*/
-                        }
-                      : null,
-                      text: "Request this", // Disabled when false,
+                      }
+                    : null,
+                text: "Request this", // Disabled when false,
               ),
               SizedBox(
                 height: screenHeight * 0.07,

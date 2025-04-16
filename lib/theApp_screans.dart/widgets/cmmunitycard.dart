@@ -3,6 +3,7 @@ import 'package:mini_project/helpers/comment_utils.dart';
 import 'package:mini_project/helpers/time_utils.dart';
 import 'package:mini_project/theApp_screans.dart/models/comunnity.dart';
 import 'package:mini_project/theApp_screans.dart/screans/postdetails.dart';
+import 'package:mini_project/theApp_screans.dart/widgets/report_dailog.dart';
 
 
 
@@ -80,7 +81,11 @@ class _CommunitycardState extends State<Communitycard> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                showReportOptions(context, (selectedReason) {
+                                print("the reason:$selectedReason");
+                  });
+                              },
                               icon: Icon(
                                 Icons.flag_outlined,
                                 size: 30,

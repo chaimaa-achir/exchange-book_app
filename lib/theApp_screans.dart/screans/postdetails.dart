@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mini_project/helpers/comment_utils.dart';
 import 'package:mini_project/helpers/time_utils.dart';
 import 'package:mini_project/theApp_screans.dart/models/comunnity.dart';
+import 'package:mini_project/theApp_screans.dart/widgets/report_dailog.dart';
 
 class Postdetails extends StatefulWidget {
   const Postdetails({super.key, required this.community});
@@ -82,7 +83,14 @@ class _PostdetailsState extends State<Postdetails> {
                                             Text(widget.community.username,
                                                 style:
                                                     TextStyle(fontSize: 18)),
-                                            Icon(Icons.flag_outlined, size: 26),
+                                            InkWell(
+                                              onTap:(){
+                                                showReportOptions(context, (selectedReason) {
+                                           print("the reason:$selectedReason");
+                                        });
+                                              },
+                                              child: Icon(Icons.flag_outlined, size: 26)
+                                              ),
                                           ],
                                         ),
                                         SizedBox(height: 4),
@@ -320,7 +328,13 @@ class _PostdetailsState extends State<Postdetails> {
                 Text(comment.userName,
                     style:
                         TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
-                Icon(Icons.flag_outlined),
+                InkWell(
+                  onTap: (){
+                    showReportOptions(context, (selectedReason) {
+                    print("the reason:$selectedReason");
+                  });
+                  },
+                  child: Icon(Icons.flag_outlined)),
               ],
             ),
             subtitle: Column(
