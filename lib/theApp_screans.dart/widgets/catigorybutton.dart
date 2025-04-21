@@ -27,18 +27,18 @@ const Catigorybutton({super.key, required this.ontap,required this.catigory});
           width: screenWidth * 0.3,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: Color(0xFFB8A4E0),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color.fromARGB(255, 171, 170, 170),
-                  offset: Offset(2, 2),
-                  blurRadius: 10,
-                ),
+              color: Color(0xFFC4B5FD),
+              boxShadow: const [
+                 BoxShadow(
+                color: Colors.black12, // ✅ أخف ظل لأداء أفضل
+                offset: Offset(1, 1),
+                blurRadius: 4, // ✅ قللنا blur لسهولة التحميل
+              ),
               ]),
           alignment: Alignment.center,
           child: Text(
             catigory.catigoryName,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               color: Colors.white,
               fontWeight: FontWeight.bold,

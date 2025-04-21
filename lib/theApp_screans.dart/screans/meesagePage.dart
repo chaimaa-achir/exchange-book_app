@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mini_project/shared/notification-menu-icons.dart';
 import 'package:mini_project/theApp_screans.dart/screans/chatscreen.dart';
+import 'package:mini_project/theApp_screans.dart/widgets/drawer.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/searchbar.dart';
 
 class MeesagePage extends StatefulWidget {
@@ -44,20 +46,26 @@ class _MeesagePageState extends State<MeesagePage> {
       final screenHeight = MediaQuery.of(context).size.height;
   
     return Scaffold(
+        endDrawer: const CustomDrawer(),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         actions: [
-          IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.notifications_outlined,
-                  color: Colors.black, size: 28)),
-          IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.menu,
-                  color: Colors.black, size: 28)),
+           Padding(
+              padding: const EdgeInsets.only(right:10),
+              child: NotificationMenuIcons(),
+            ),
         ],
           
-          backgroundColor: Color.fromARGB(255, 230, 221, 255),
-          
+          backgroundColor: Colors.transparent,
+           flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFE0C3FC), Color(0xFF8EC5FC)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         title: Text(
           "Messages",
           style: TextStyle(fontSize: 25),

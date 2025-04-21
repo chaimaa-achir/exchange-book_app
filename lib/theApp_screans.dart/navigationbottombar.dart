@@ -8,15 +8,16 @@ import 'package:mini_project/theApp_screans.dart/screans/meesagePage.dart';
 import 'package:mini_project/theApp_screans.dart/screans/save.dart';
 
 class Navigationbar extends StatefulWidget {
-  const Navigationbar({super.key});
+    final int initialIndex;
+  const Navigationbar({Key? key, this.initialIndex = 0}) : super(key: key);
 
   @override
   State<Navigationbar> createState() => _NavigationbarState();
 }
 
 class _NavigationbarState extends State<Navigationbar> {
-  int _selectedIndex = 0;
-  int _intPage = 0;
+late int _selectedIndex;
+late int _intPage;
   final GlobalKey<CurvedNavigationBarState> _curvedNavigationKey = GlobalKey();
 
   void _onItemTapped(int index) {
@@ -25,9 +26,16 @@ class _NavigationbarState extends State<Navigationbar> {
       _selectedIndex = index;
     });
   }
-
+ @override
+void initState() {
+  super.initState();
+  _selectedIndex = widget.initialIndex;
+  _intPage = widget.initialIndex;
+}
+  
   @override
   Widget build(BuildContext context) {
+      
     final screenHeight = MediaQuery.of(context).size.height;
 
     return SafeArea(
@@ -49,7 +57,7 @@ class _NavigationbarState extends State<Navigationbar> {
           margin: const EdgeInsets.only(top: 20), // Adjust for proper placement
           child: FloatingActionButton(
             onPressed: () => _showBottomSheet(context),
-            backgroundColor: Color(0xFFB8A4E0),
+            backgroundColor: Color(0xFFC4B5FD),
             shape: const CircleBorder(),
             elevation: 5,
             child: const Icon(Icons.add, color: Colors.black, size: 30),
@@ -60,7 +68,7 @@ class _NavigationbarState extends State<Navigationbar> {
           currentIndex: _selectedIndex,
           selectedLabelStyle: TextStyle(fontSize: 10),
           unselectedLabelStyle: TextStyle(fontSize: 10),
-          selectedItemColor: Color.fromARGB(255, 160, 107, 186),
+          selectedItemColor: Color.fromARGB(255, 158, 107, 183),
           unselectedItemColor: Colors.grey,
           
           showUnselectedLabels: true,

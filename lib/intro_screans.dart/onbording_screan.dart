@@ -52,7 +52,7 @@ class _OnBordingscreanState extends State<OnbordingScrean> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Signupscrean()),
+                                builder: (context) => Signupscrean(isAgree: false,)),
                           );
                         },
                         child: Container(

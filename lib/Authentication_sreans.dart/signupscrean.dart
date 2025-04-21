@@ -3,12 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mini_project/Authentication_sreans.dart/login.dart';
+import 'package:mini_project/Authentication_sreans.dart/termandconditions.dart';
 import 'package:mini_project/Authentication_sreans.dart/verifyCode.dart';
 import 'package:mini_project/shared/costumeelevatedBottom.dart';
 
-
 class Signupscrean extends StatefulWidget {
-  const Signupscrean({super.key});
+  const Signupscrean({super.key,required this.isAgree});
+  final bool isAgree;
 
   @override
   State<Signupscrean> createState() => _SignupscreanState();
@@ -18,11 +19,21 @@ final TextEditingController _emailController = TextEditingController();
 final TextEditingController _fullnameController = TextEditingController();
 
 class _SignupscreanState extends State<Signupscrean> {
-  bool _isPasswordVisible = true;
+  bool _isPasswordVisible1 = true;
+  bool _isPasswordVisible2 = true;
   bool isChecked = false;
   String? email;
+  void _updateCheckboxState(bool value) {
+    setState(() {
+      isChecked = value;
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
+    if (widget.isAgree) {
+      _updateCheckboxState(true);
+    }
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
@@ -155,7 +166,7 @@ class _SignupscreanState extends State<Signupscrean> {
                   height: screenHeight * 0.05,
                   child: TextField(
                     keyboardType: TextInputType.emailAddress,
-                    obscureText: _isPasswordVisible,
+                    obscureText: _isPasswordVisible1,
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 10, vertical: 7),
@@ -168,10 +179,10 @@ class _SignupscreanState extends State<Signupscrean> {
                       suffixIcon: InkWell(
                           onTap: () {
                             setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
+                              _isPasswordVisible1 = !_isPasswordVisible1;
                             });
                           },
-                          child: _isPasswordVisible
+                          child: _isPasswordVisible1
                               ? Icon(Icons.visibility_off)
                               : Icon(Icons.visibility)),
                     ),
@@ -193,7 +204,7 @@ class _SignupscreanState extends State<Signupscrean> {
                   height: screenHeight * 0.05,
                   child: TextField(
                     keyboardType: TextInputType.emailAddress,
-                    obscureText: true,
+                    obscureText: _isPasswordVisible2,
                     decoration: InputDecoration(
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 10, vertical: 7),
@@ -203,6 +214,15 @@ class _SignupscreanState extends State<Signupscrean> {
                       ),
                       filled: true,
                       fillColor: Colors.grey[200],
+                      suffixIcon: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _isPasswordVisible2 = !_isPasswordVisible2;
+                            });
+                          },
+                          child: _isPasswordVisible2
+                              ? Icon(Icons.visibility_off)
+                              : Icon(Icons.visibility)),
                     ),
                   ),
                 ),
@@ -235,7 +255,15 @@ class _SignupscreanState extends State<Signupscrean> {
                       style: TextStyle(fontSize: 13),
                     ),
                     InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => TermsAndConditionsPage(
+                                      // onAgree: _updateCheckboxState,
+                                    )),
+                          );
+                        },
                         child: Text(
                           "Terms and Conditions ",
                           style: TextStyle(
@@ -247,24 +275,22 @@ class _SignupscreanState extends State<Signupscrean> {
                 SizedBox(
                   height: screenHeight * 0.025,
                 ),
-              
-                 myelvatedbottom(
+                myelvatedbottom(
                   text: "Sign up",
-                  onPressed:() async {
-                      final String fullname = _fullnameController.text.trim();
-                      final String emailUser = _emailController.text.trim();
+                  onPressed: () async {
+                    final String fullname = _fullnameController.text.trim();
+                    final String emailUser = _emailController.text.trim();
 
-                      if (emailUser.isNotEmpty && fullname.isNotEmpty) {
-                        if (!context.mounted) return;
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  Verifycode(email: emailUser)),
-                        );
-                      }
-                    }, 
-                 ),
+                    if (emailUser.isNotEmpty && fullname.isNotEmpty) {
+                      if (!context.mounted) return;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Verifycode(email: emailUser)),
+                      );
+                    }
+                  },
+                ),
                 SizedBox(
                   height: screenHeight * 0.037,
                 ),

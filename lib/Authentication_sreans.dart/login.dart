@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mini_project/Authentication_sreans.dart/forgett-Pass.dart';
 import 'package:mini_project/Authentication_sreans.dart/signupscrean.dart';
 import 'package:mini_project/shared/costumeelevatedBottom.dart';
 
@@ -133,7 +134,13 @@ class _LoginscreanState extends State<Loginscrean> {
                 FractionallySizedBox(
                   widthFactor: 0.9,
                   child: InkWell(
-                    onTap:(){},
+                    onTap:(){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ForgotPasswordScreen()),
+                          );
+                    },
                     child: Text("Forget Password?",
                                  textAlign: TextAlign.right,
                            style: TextStyle(color:Color.fromARGB(255, 160, 107, 186)),
@@ -270,9 +277,9 @@ class _LoginscreanState extends State<Loginscrean> {
                   GestureDetector(
                     onTap:(){
                         Navigator.push(
-                             context,
-                          MaterialPageRoute(builder: (context) => Signupscrean()),
-                               );
+                    context,
+                    MaterialPageRoute(builder: (context) =>  Signupscrean(isAgree: false,)),
+                  );
                     },
                       child: Text(
                         "Sing up",

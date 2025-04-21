@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mini_project/shared/notification-menu-icons.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/Booksdispalyhome.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/catigory-display.dart';
 //import 'package:http/http.dart';
 //import 'dart:convert';
 import 'package:mini_project/theApp_screans.dart/widgets/catigorybutton.dart';
+import 'package:mini_project/theApp_screans.dart/widgets/drawer.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/searchbar.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/userdisplayhome.dart';
-
-
 
 class Homesrean extends StatefulWidget {
   const Homesrean({super.key});
@@ -20,22 +20,20 @@ class _HomesreanState extends State<Homesrean> {
   List<String> allItems = [];
 
   Map recivedata = {};
-   late SearchController _searchController = SearchController();
+  late SearchController _searchController = SearchController();
   @override
   void initState() {
     super.initState();
     //fetchUsers();
-    
+
     _searchController = SearchController();
-    
   }
-    @override
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
-
-
 
 /*void fetchUsers() async {
    void fetchUsers() async {
@@ -58,57 +56,45 @@ class _HomesreanState extends State<Homesrean> {
 
   @override
   Widget build(BuildContext context) {
-     final screenHeight = MediaQuery.of(context).size.height;
-     final screenWidth =MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
+            endDrawer: const CustomDrawer(),
         backgroundColor: Color(0xFFFDFDFF),
         appBar: AppBar(
+          automaticallyImplyLeading: false,
+          actions: [
+              Padding(
+                padding: EdgeInsets.only(bottom:screenHeight*0.05,right: screenWidth*0.02),
+                child: NotificationMenuIcons(),
+              ),
+          ],
           toolbarHeight: screenHeight * 0.13,
-          backgroundColor: Color.fromARGB(255, 230, 221, 255),
+          backgroundColor: Colors.transparent,
           elevation: 0,
+           flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFE0C3FC), Color(0xFF8EC5FC)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+          
           title: Column(
             children: [
               FractionallySizedBox(
                 widthFactor: 1.050,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        " Welcome,FullName full namee ",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        InkWell(
-                          onTap: () {},
-                          child: Icon(
-                            Icons.notifications_outlined,
-                            color: Colors.black,
-                            size: 28,
-                          ),
-                        ),
-                        SizedBox(
-                          width:screenWidth * 0.03,
-                        ),
-                        InkWell(
-                          onTap: () {},
-                          child: Icon(
-                            Icons.menu,
-                            color: Colors.black,
-                            size: 28,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                child: Text(
+                  " Welcome,FullName full namee ",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               FractionallySizedBox(
@@ -180,7 +166,7 @@ class _HomesreanState extends State<Homesrean> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                    const   Text(
+                      const Text(
                         "Most requested books",
                         style: TextStyle(
                             color: Color(0xFF1A1A1A),
@@ -191,7 +177,7 @@ class _HomesreanState extends State<Homesrean> {
                         onTap: () {},
                         child: Row(
                           children: [
-                          const  Text(
+                            const Text(
                               "All",
                               style: TextStyle(fontSize: 14),
                             ),
@@ -203,7 +189,7 @@ class _HomesreanState extends State<Homesrean> {
                   ),
                 ),
                 Bookdispalyhome(),
-                FractionallySizedBox(
+                /*  FractionallySizedBox(
                   widthFactor: 0.9,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -229,9 +215,9 @@ class _HomesreanState extends State<Homesrean> {
                       )
                     ],
                   ),
-                ),
-                Bookdispalyhome(),
-                FractionallySizedBox(
+                ),*
+                Bookdispalyhome(),*/
+                /*  FractionallySizedBox(
                   widthFactor: 0.9,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -258,7 +244,7 @@ class _HomesreanState extends State<Homesrean> {
                     ],
                   ),
                 ),
-                Userdisplayhome(),
+                Userdisplayhome(),*/
                 FractionallySizedBox(
                   widthFactor: 0.9,
                   child: Row(
@@ -267,7 +253,7 @@ class _HomesreanState extends State<Homesrean> {
                       const Text(
                         "Top books",
                         style: TextStyle(
-                            color:Color(0xFF1A1A1A),
+                            color: Color(0xFF1A1A1A),
                             fontSize: 16,
                             fontWeight: FontWeight.w400),
                       ),
@@ -275,7 +261,7 @@ class _HomesreanState extends State<Homesrean> {
                         onTap: () {},
                         child: Row(
                           children: [
-                          const   Text(
+                            const Text(
                               "All",
                               style: TextStyle(fontSize: 14),
                             ),
@@ -287,7 +273,6 @@ class _HomesreanState extends State<Homesrean> {
                   ),
                 ),
                 Bookdispalyhome(),
-              
               ],
             ),
           ),

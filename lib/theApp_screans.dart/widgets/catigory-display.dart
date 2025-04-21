@@ -17,6 +17,7 @@ class Catigorydisplay extends StatelessWidget {
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: catigories.length,
+          physics: const BouncingScrollPhysics(),
           itemBuilder: (context, index) {
             return Catigorybutton(
                ontap: (){

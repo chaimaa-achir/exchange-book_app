@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:mini_project/Authentication_sreans.dart/login.dart';
+//import 'package:flutter/rendering.dart';
 
-import 'package:mini_project/intro_screans.dart/onbording_screan.dart';
+
+import 'package:mini_project/theApp_screans.dart/models/book.dart';
 import 'package:mini_project/theApp_screans.dart/navigationbottombar.dart';
 import 'package:mini_project/theApp_screans.dart/providers/saved-books-provider.dart';
-import 'package:mini_project/theApp_screans.dart/screans/add-book.dart';
-import 'package:mini_project/theApp_screans.dart/screans/chatscreen.dart';
-import 'package:mini_project/theApp_screans.dart/screans/meesagePage.dart';
+
+import 'package:mini_project/theApp_screans.dart/screans/profilecurrentuser.dart';
+
+
 import 'package:provider/provider.dart';
 
 void main() {
-  debugPaintSizeEnabled = false;
+  //debugPaintSizeEnabled = false;
   
   runApp(const MyApp());
 }
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData.light(useMaterial3: true),
         showPerformanceOverlay: false,
-        home: Addbookscrean(),
+        home: Navigationbar(),
       ),
     );
   }

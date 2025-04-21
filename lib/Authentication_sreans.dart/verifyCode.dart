@@ -8,8 +8,6 @@ import 'package:mini_project/theApp_screans.dart/screans/home.dart';
 
 import 'package:pin_code_fields/pin_code_fields.dart';
 
-
-
 class Verifycode extends StatefulWidget {
   final String email;
   const Verifycode({super.key, required this.email});
@@ -23,8 +21,8 @@ final TextEditingController _otpcontroller = TextEditingController();
 class _VerifyCodeState extends State<Verifycode> {
   @override
   Widget build(BuildContext context) {
-      final screenHeight = MediaQuery.of(context).size.height;
-  final screenWidth =MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(),
@@ -35,7 +33,7 @@ class _VerifyCodeState extends State<Verifycode> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height:screenHeight  * 0.05,
+                height: screenHeight * 0.05,
                 //height: 20,
               ),
               Text(
@@ -60,7 +58,7 @@ class _VerifyCodeState extends State<Verifycode> {
                     fontWeight: FontWeight.w500),
               ),
               SizedBox(
-                height: screenHeight  * 0.08,
+                height: screenHeight * 0.08,
               ),
               PinCodeTextField(
                 controller: _otpcontroller,
@@ -89,7 +87,7 @@ class _VerifyCodeState extends State<Verifycode> {
                 onChanged: (value) {},
               ),
               SizedBox(
-                height: screenHeight  * 0.03,
+                height: screenHeight * 0.03,
               ),
               Text(
                 "didn't receive the OTP?",
@@ -98,46 +96,48 @@ class _VerifyCodeState extends State<Verifycode> {
               ),
               GestureDetector(onTap: () {}, child: Text("Resend code")),
               SizedBox(
-                height: screenHeight  * 0.03,
+                height: screenHeight * 0.03,
               ),
-              FractionallySizedBox(
-                widthFactor: 0.9,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    String optenter = _otpcontroller.text;
-                    if (optenter.isEmpty || optenter.length < 6) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Please enter a valid Code')));
-                      return;
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Homesrean()),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Color.fromARGB(255, 160, 107, 186), // Button color
-                    padding: EdgeInsets.all(8), // Padding
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(25), // Rounded corners
-                    ),
-                    elevation: 8, // Shadow effect
-                    shadowColor:
-                        Colors.deepPurple.withOpacity(0.9), // Shadow color
-                  ),
-                  child: Text(
-                    "Verify",
-                    style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            /*  myelvatedbottom(
+              // FractionallySizedBox(
+              //   widthFactor: 0.9,
+              //   child: ElevatedButton(
+              //     onPressed: () async {
+              //       String optenter = _otpcontroller.text;
+              //       if (optenter.isEmpty || optenter.length < 6) {
+              //         ScaffoldMessenger.of(context).showSnackBar(
+              //             SnackBar(content: Text('Please enter a valid Code')));
+              //         return;
+              //       } else {
+              //         Navigator.pushReplacement(
+              //           context,
+              //           MaterialPageRoute(
+              //               builder: (context) =>
+              //                   Navigationbar(initialIndex: 0)),
+              //         );
+              //       }
+              //     },
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor:
+              //           Color.fromARGB(255, 160, 107, 186), // Button color
+              //       padding: EdgeInsets.all(8), // Padding
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius:
+              //             BorderRadius.circular(25), // Rounded corners
+              //       ),
+              //       elevation: 8, // Shadow effect
+              //       shadowColor:
+              //           Colors.deepPurple.withOpacity(0.9), // Shadow color
+              //     ),
+              //     child: Text(
+              //       "Verify",
+              //       style: TextStyle(
+              //           fontSize: 18,
+              //           color: Colors.white,
+              //           fontWeight: FontWeight.bold),
+              //     ),
+              //   ),
+              // ),
+                myelvatedbottom(
                 text: "Verify",
                 onPressed:  () async {
                     String optenter = _otpcontroller.text;
@@ -146,13 +146,15 @@ class _VerifyCodeState extends State<Verifycode> {
                           SnackBar(content: Text('Please enter a valid Code')));
                       return;
                     } else {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => Navigationbar()),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                Navigationbar(initialIndex: 0)),
                       );
                     }
                   },
-              ),*/
+              ),
             ],
           ),
         ),

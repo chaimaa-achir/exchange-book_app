@@ -12,7 +12,7 @@ class myelvatedbottom extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color.fromARGB(255, 160, 107, 186), // Button color
+          backgroundColor: Color.fromARGB(255, 158, 107, 183), // Button color
           padding: EdgeInsets.all(8), // Padding
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25), // Rounded corners

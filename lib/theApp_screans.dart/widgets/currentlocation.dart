@@ -2,8 +2,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-
-
 class CurrentUserLocation extends StatefulWidget {
   const CurrentUserLocation({super.key});
 
@@ -17,6 +15,12 @@ class _CurrentUserLocationState extends State<CurrentUserLocation> {
       CameraPosition(target: LatLng(34.8888, -1.3180), zoom: 14);
   Set<Marker> markers = {};
   bool isLoading = false;
+
+  @override
+  void dispose() {
+    _googleMapController?.dispose(); // ✅ تنظيف الكنترولر
+    super.dispose();
+  }
 
   Future<void> _determinePosition() async {
     setState(() {
@@ -40,14 +44,12 @@ class _CurrentUserLocationState extends State<CurrentUserLocation> {
         throw Exception("Location permission is permanently denied");
       }
 
-      // Get user location with a timeout
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.low,
       ).timeout(const Duration(seconds: 10), onTimeout: () {
         throw Exception("Location request timed out");
       });
 
-      // Update markers only when GoogleMap is ready
       if (_googleMapController != null) {
         setState(() {
           markers.clear();
@@ -56,7 +58,6 @@ class _CurrentUserLocationState extends State<CurrentUserLocation> {
             position: LatLng(position.latitude, position.longitude),
           ));
 
-          // Ensure GoogleMap is loaded before moving camera
           _googleMapController?.animateCamera(
             CameraUpdate.newCameraPosition(
               CameraPosition(
@@ -86,7 +87,8 @@ class _CurrentUserLocationState extends State<CurrentUserLocation> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-      final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Stack(
       children: [
         GoogleMap(
@@ -99,17 +101,17 @@ class _CurrentUserLocationState extends State<CurrentUserLocation> {
           },
         ),
         Positioned(
-          bottom:screenWidth* 0.02,
-          right:screenWidth* 0.009,
+          bottom: screenWidth * 0.02,
+          right: screenWidth * 0.009,
           child: SizedBox(
             height: screenHeight * 0.04,
-            width:screenWidth* 0.35,
+            width: screenWidth * 0.35,
             child: FloatingActionButton.extended(
               onPressed: isLoading ? null : _determinePosition,
               label: isLoading
                   ? const CircularProgressIndicator()
                   : const Text("Current location", style: TextStyle(fontSize: 12)),
-              icon: isLoading ? Container() : Icon(Icons.location_history, size: 20),
+              icon: isLoading ? Container() : const Icon(Icons.location_history, size: 20),
             ),
           ),
         ),

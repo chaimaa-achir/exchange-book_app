@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mini_project/shared/notification-menu-icons.dart';
 import 'package:mini_project/theApp_screans.dart/models/book.dart';
 import 'package:mini_project/theApp_screans.dart/providers/saved-books-provider.dart';
 import 'package:mini_project/theApp_screans.dart/screans/book-details.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/bookcard-save.dart';
+import 'package:mini_project/theApp_screans.dart/widgets/drawer.dart';
 import 'package:provider/provider.dart';
 
 
@@ -22,20 +24,26 @@ class _savePageState extends State<savePage> {
   Widget build(BuildContext context) {
     final savedBooks = Provider.of<SavedBooksProvider>(context).savedBooks;
     return Scaffold(
+        endDrawer: const CustomDrawer(),
       appBar: AppBar(
+          automaticallyImplyLeading: false,
           actions: [
-          IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.notifications_outlined,
-                  color: Colors.black, size: 28)),
-          IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.menu,
-                  color: Colors.black, size: 28)),
+            Padding(
+              padding: const EdgeInsets.only(right:10),
+              child: NotificationMenuIcons(),
+            ),
         ],
         title: Text("My Listing "),
-        backgroundColor: Color.fromARGB(255, 230, 221, 255),
-        
+        backgroundColor: Colors.transparent,
+         flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFE0C3FC), Color(0xFF8EC5FC)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
       body: ListView.builder(
           itemCount: savedBooks.length,
