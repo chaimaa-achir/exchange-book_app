@@ -5,6 +5,7 @@ import 'package:mini_project/theApp_screans.dart/screans/change-pass.dart';
 import 'package:mini_project/theApp_screans.dart/screans/community.dart';
 import 'package:mini_project/theApp_screans.dart/screans/home.dart';
 import 'package:mini_project/theApp_screans.dart/screans/meesagePage.dart';
+import 'package:mini_project/theApp_screans.dart/screans/profilecurrentuser.dart';
 import 'package:mini_project/theApp_screans.dart/screans/save.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -46,7 +47,17 @@ class CustomDrawer extends StatelessWidget {
             ),
           ),
 
-          // باقي محتوى الـ Drawer عادي
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text("Your Profile"),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>  ProfileCurrentUserScreen()),
+              );
+            },
+          ),
           ListTile(
             leading: Icon(Icons.home),
             title: Text("Home"),

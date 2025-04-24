@@ -58,223 +58,163 @@ class _HomesreanState extends State<Homesrean> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    return SafeArea(
-      child: Scaffold(
-            endDrawer: const CustomDrawer(),
-        backgroundColor: Color(0xFFFDFDFF),
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          actions: [
-              Padding(
-                padding: EdgeInsets.only(bottom:screenHeight*0.05,right: screenWidth*0.02),
-                child: NotificationMenuIcons(),
-              ),
-          ],
-          toolbarHeight: screenHeight * 0.13,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-           flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFE0C3FC), Color(0xFF8EC5FC)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return Scaffold(
+          endDrawer: const CustomDrawer(),
+      backgroundColor: Color(0xFFFDFDFF),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        actions: [
+            Padding(
+              padding: EdgeInsets.only(bottom:screenHeight*0.05,right: screenWidth*0.02),
+              child: NotificationMenuIcons(),
             ),
+        ],
+        toolbarHeight: screenHeight * 0.13,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+         flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFE0C3FC), Color(0xFF8EC5FC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
-          
-          title: Column(
+      ),
+        
+        title: Column(
+          children: [
+            FractionallySizedBox(
+              widthFactor: 1.050,
+              child: Text(
+                " Welcome,FullName full namee ",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            SizedBox(
+              height: screenHeight * 0.02,
+             ),
+            FractionallySizedBox(
+              widthFactor: 1.050,
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 20,
+                    color: Colors.black54,
+                  ),
+                  InkWell(
+                    onTap: () {},
+                    child: Text(
+                      "tlemcen imama ",
+                      style: TextStyle(fontSize: 14, color: Colors.black87),
+                    ),
+                  ), // هذا المتغير يجب تحديده لاحقًا
+                ],
+              ),
+            ),
+            // SizedBox(
+            //   height: screenHeight * 0.007,
+            // ),
+            // FractionallySizedBox(
+            //   widthFactor: 0.90,
+            //   child: Text(
+            //     "Listings with 3.1m ",
+            //     style: TextStyle(color: Colors.black45, fontSize: 10),
+            //   ),
+            // ),
+          ],
+        ),
+      ),
+      body: SizedBox(
+        height: double.infinity,
+        width: double.infinity,
+        child: SingleChildScrollView(
+          child: Column(
             children: [
-              FractionallySizedBox(
-                widthFactor: 1.050,
-                child: Text(
-                  " Welcome,FullName full namee ",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+              SizedBox(
+                height: screenHeight * 0.018,
+              ),
+              CustomSearchBar(
+                searchController: _searchController,
+                allItems: allItems,
+              ),
+              SizedBox(
+                height: screenHeight * 0.02,
               ),
               FractionallySizedBox(
-                widthFactor: 1.050,
+                  widthFactor: 0.9,
+                  child: const Text(
+                    "Categories",
+                    style: TextStyle(
+                        color: Color(0xFF1A1A1A),
+                        fontSize: 17,
+                        fontWeight: FontWeight.w400),
+                  )),
+              SizedBox(
+                height: screenHeight * 0.01,
+              ),
+              Catigorydisplay(),
+              SizedBox(
+                height: screenHeight * 0.02,
+              ),
+              FractionallySizedBox(
+                widthFactor: 0.9,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(
-                      Icons.location_on_outlined,
-                      size: 20,
-                      color: Colors.black54,
+                    const Text(
+                      "Most requested books",
+                      style: TextStyle(
+                          color: Color(0xFF1A1A1A),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400),
                     ),
                     InkWell(
                       onTap: () {},
-                      child: Text(
-                        "tlemcen imama ",
-                        style: TextStyle(fontSize: 14, color: Colors.black87),
+                      child: Row(
+                        children: [
+                          const Text(
+                            "All",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          Icon(Icons.chevron_right),
+                        ],
                       ),
-                    ), // هذا المتغير يجب تحديده لاحقًا
+                    )
                   ],
                 ),
               ),
-              SizedBox(
-                height: screenHeight * 0.007,
+              Bookdispalyhome(),
+      
+                FractionallySizedBox(
+                widthFactor: 0.9,
+                child: const  Text(
+                    "Top users",
+                    style: TextStyle(
+                        color: Color(0xFF1A1A1A),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400),
+                  ),
               ),
+              Userdisplayhome(),
               FractionallySizedBox(
-                widthFactor: 0.90,
-                child: Text(
-                  "Listings with 3.1m ",
-                  style: TextStyle(color: Colors.black45, fontSize: 10),
+                widthFactor: 0.9,
+                child: const Text(
+                  "Books near you",
+                  style: TextStyle(
+                      color: Color(0xFF1A1A1A),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400),
                 ),
               ),
+              Bookdispalyhome(),
             ],
-          ),
-        ),
-        body: SizedBox(
-          height: double.infinity,
-          width: double.infinity,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: screenHeight * 0.018,
-                ),
-                CustomSearchBar(
-                  searchController: _searchController,
-                  allItems: allItems,
-                ),
-                SizedBox(
-                  height: screenHeight * 0.02,
-                ),
-                FractionallySizedBox(
-                    widthFactor: 0.9,
-                    child: const Text(
-                      "Categories",
-                      style: TextStyle(
-                          color: Color(0xFF1A1A1A),
-                          fontSize: 17,
-                          fontWeight: FontWeight.w400),
-                    )),
-                SizedBox(
-                  height: screenHeight * 0.01,
-                ),
-                Catigorydisplay(),
-                SizedBox(
-                  height: screenHeight * 0.02,
-                ),
-                FractionallySizedBox(
-                  widthFactor: 0.9,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Most requested books",
-                        style: TextStyle(
-                            color: Color(0xFF1A1A1A),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      InkWell(
-                        onTap: () {},
-                        child: Row(
-                          children: [
-                            const Text(
-                              "All",
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            Icon(Icons.chevron_right),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Bookdispalyhome(),
-                /*  FractionallySizedBox(
-                  widthFactor: 0.9,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                    const  Text(
-                        "Books Near you",
-                        style: TextStyle(
-                            color: Color(0xFF1A1A1A),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      InkWell(
-                        onTap: () {},
-                        child: Row(
-                          children: [
-                          const  Text(
-                              "All",
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            Icon(Icons.chevron_right),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),*
-                Bookdispalyhome(),*/
-                /*  FractionallySizedBox(
-                  widthFactor: 0.9,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                    const  Text(
-                        "Top users",
-                        style: TextStyle(
-                            color: Color(0xFF1A1A1A),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      InkWell(
-                        onTap: () {},
-                        child: Row(
-                          children: [
-                          const  Text(
-                              "All",
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            Icon(Icons.chevron_right),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Userdisplayhome(),*/
-                FractionallySizedBox(
-                  widthFactor: 0.9,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Top books",
-                        style: TextStyle(
-                            color: Color(0xFF1A1A1A),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      InkWell(
-                        onTap: () {},
-                        child: Row(
-                          children: [
-                            const Text(
-                              "All",
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            Icon(Icons.chevron_right),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Bookdispalyhome(),
-              ],
-            ),
           ),
         ),
       ),

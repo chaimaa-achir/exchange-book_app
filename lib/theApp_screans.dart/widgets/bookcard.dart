@@ -163,7 +163,7 @@ class Bookcard extends StatelessWidget {
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 6,
+                  fontSize: 6, 
                 ),
               ),
             ),

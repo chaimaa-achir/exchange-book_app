@@ -1,98 +1,215 @@
 import 'package:flutter/material.dart';
+import 'package:mini_project/shared/costumeelevatedBottom.dart';
 import 'package:mini_project/theApp_screans.dart/models/book.dart';
 
-
-
-class requestPAge extends StatefulWidget {
+class RequestPage extends StatefulWidget {
   final Book book;
-  const requestPAge({super.key, required this.book});
+  const RequestPage({super.key, required this.book});
+
   @override
-  State<requestPAge> createState() => _requestPAgeState();
+  State<RequestPage> createState() => _RequestPageState();
 }
 
-class _requestPAgeState extends State<requestPAge> {
-  String? selectedDurationType;
-  int? selectedDuration;
-  // Show Submenu for Number Selection
-  void _showSubMenu(BuildContext context, String type) async {
-    int? selectedNumber = await showMenu<int>(
-      context: context,
-      position: RelativeRect.fromLTRB(100, 300, 100, 0),
-      items: List.generate(
-        type == "Days" ? 30 : 12,
-        (index) => PopupMenuItem<int>(
-          value: index + 1,
-          child: Text("${index + 1}"),
+Book? selectedBookForExchange;
+
+class _RequestPageState extends State<RequestPage> {
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 18,
+        title: const Text("Make Request"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              /// Book owner section
+              /// /// Book owner section (book image + title + owner)
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      widget.book.bookimage,
+                      width: screenWidth * 0.15,
+                      height: screenHeight * 0.04,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    widget.book.booktitel,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              Divider(),
+              const SizedBox(
+                height: 20,
+              ),
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage: AssetImage(widget.book.ownerimage),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(widget.book.ownername),
+                ],
+              ),
+              if (widget.book.bookstatus == "Lending") ...[
+                const SizedBox(height: 30),
+                FractionallySizedBox(
+                  widthFactor: 1,
+                  child: const Text(
+                    "How many days would you like to borrow this book?",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    hintText: "Enter number of days",
+                    hintStyle: TextStyle(color: Colors.grey),
+                    border: UnderlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 30),
+              ],
+              if (widget.book.bookstatus == "Exchange") ...[
+                const SizedBox(height: 30),
+                FractionallySizedBox(
+                  widthFactor: 1,
+                  child: const Text(
+                    "Select a book you want to offer in exchange:",
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        Colors.grey, // Button color
+                    padding: EdgeInsets.symmetric(horizontal: screenWidth*0.07), // Padding
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(25), // Rounded corners
+                    ),
+                    elevation: 8, // Shadow effect
+                    // Shadow color
+                  ),
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            SelectExchangeBookPage(), // صفحة اختيار الكتاب
+                      ),
+                    );
+                    if (result != null && result is Book) {
+                      setState(() {
+                        selectedBookForExchange = result;
+                      });
+                    }
+                  },
+                  child: Text(selectedBookForExchange == null
+                      ? "Choose a book"
+                      : "Selected: ${selectedBookForExchange!.booktitel}",style: TextStyle(color: Colors.white),),
+                ),
+              ],
+              const SizedBox(
+                height: 20,
+              ),
+    
+              /// Message input
+              FractionallySizedBox(
+                widthFactor: 1,
+                child: const Text(
+                  "Add a message to your request",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                decoration: InputDecoration(
+                  hintText:
+                      "Send a friendly message to ${widget.book.ownername}",
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  border: const UnderlineInputBorder(),
+                ),
+                maxLines: 2,
+              ),
+    
+              SizedBox(
+                height: screenHeight * 0.2,
+              ),
+    
+              /// Send button
+              myelvatedbottom(onPressed: () {}, text: "Send request"),
+            ],
+          ),
         ),
       ),
     );
-
-    if (selectedNumber != null) {
-      setState(() {
-        selectedDuration = selectedNumber;
-      });
-    }
   }
+}
+
+class SelectExchangeBookPage extends StatelessWidget {
+  // هذا المفروض يكون من API: كتب المستخدم اللي حالتها Exchange
+  final List<Book> userExchangeBooks = [
+    Book(
+      booktitel: "My Book 1",
+      bookimage: "assets/img/history.jpg",
+      bookstatus: "Exchange",
+      ownername: "",
+      ownerimage: "",
+      distence: "",
+      postDate: DateTime(2025, 3, 25, 14, 30),
+      availability: true,
+      category: "",
+    ),
+    Book(
+      booktitel: "My Book 2",
+      bookimage: "assets/img/history.jpg",
+      bookstatus: "Exchange",
+      ownername: "",
+      ownerimage: "",
+      distence: "",
+      postDate: DateTime(2025, 3, 25, 14, 30),
+      availability: true,
+      category: "",
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-      final screenHeight =MediaQuery.of(context).size.height;
-      final screenWidth = MediaQuery.of(context).size.width;
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 18,
-          title: Text("Make a request"),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              height: screenHeight * 0.5,
-              width:screenWidth* 0.2,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-              ),
-              child: Image.asset("assets/img/history.jpg"),
-            ),
-            // Main DropdownButtonFormField
-            FractionallySizedBox(
-              widthFactor: 0.9,
-              child: DropdownButtonFormField<String>(
-                value: selectedDurationType,
-                decoration: InputDecoration(
-                  labelText: "Select Duration",
-                  border: OutlineInputBorder(),
-                ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedDurationType = newValue;
-                    selectedDuration = null; // Reset number selection
-                  });
-                  if (newValue != null) {
-                    _showSubMenu(context, newValue);
-                  }
-                },
-                items: [
-                  DropdownMenuItem(value: "Days", child: Text("Days")),
-                  DropdownMenuItem(value: "Months", child: Text("Months")),
-                ],
-              ),
-            ),
-
-            // Display the selected number only after choosing from submenu
-            if (selectedDuration != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Text(
-                  "Selected Duration: $selectedDuration $selectedDurationType",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-          ],
-        ),
+    return Scaffold(
+      appBar: AppBar(title: const Text("Select a Book")),
+      body: ListView.builder(
+        itemCount: userExchangeBooks.length,
+        itemBuilder: (context, index) {
+          final book = userExchangeBooks[index];
+          return ListTile(
+            leading: Image.asset(book.bookimage, width:MediaQuery.of(context).size.width*0.15),
+            title: Text(book.booktitel),
+            onTap: () {
+              Navigator.pop(context, book); // نرجع الكتاب المختار
+            },
+          );
+        },
       ),
     );
-    // Show Submenu for Number Selection
   }
 }

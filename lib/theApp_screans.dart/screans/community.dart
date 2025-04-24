@@ -13,7 +13,7 @@ class CommunityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
-     print("Community List: $communitylist");
+  
     return Scaffold(
         endDrawer: const CustomDrawer(),
       appBar: AppBar(

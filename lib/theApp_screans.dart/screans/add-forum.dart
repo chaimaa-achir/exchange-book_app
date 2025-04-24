@@ -58,114 +58,112 @@ Future<void> _pickImages() async {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Add Community Post"),
-          elevation: 15,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Add Community Post"),
+        elevation: 15,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
         ),
-        body: SizedBox(
-          width: double.infinity,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height:  screenHeight * 0.02,
-                ),
-                Row(
+      ),
+      body: SizedBox(
+        width: double.infinity,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(
+                height:  screenHeight * 0.02,
+              ),
+              Row(
+                children: [
+                  SizedBox(
+                    width:  screenWidth * 0.04,
+                  ),
+                  CircleAvatar(
+                    radius: 21,
+                    backgroundImage: AssetImage(
+                        "assets/img/history.jpg"), // i get it from data base
+                  ),
+                  SizedBox(
+                    width:  screenWidth * 0.04,
+                  ),
+                  Text(
+                    " username",
+                    style:
+                        TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                  ), // iget it from data base
+                ],
+              ),
+              Divider(),
+              SizedBox(
+                height:  screenHeight * 0.02,
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                      left:  screenWidth * 0.075,
+                      top:  screenWidth * 0.05,
+                    ),
+                child: images.isEmpty
+                    ? ImagePalceholder(
+                        imageError: false,
+                        bookImage: forumImage,
+                        pickImages:  _pickImages,
+                        showErrorMessage: false,
+                      )
+                    : SizedBox(
+                        height:  screenHeight * 0.13,
+                        child: _buildImageGrid()),
+              ),
+              SizedBox(
+                height:  screenHeight * 0.05,
+              ),
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    FractionallySizedBox(
+                        widthFactor: 0.9,
+                        child: Text(
+                          "🌍 Share relevant topics with the community",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        )),
+                    FractionallySizedBox(
+                      widthFactor: 0.9,
+                      child: TextField(
+                          controller: _decriptioncontroller,
+                          decoration: InputDecoration(
+                            hintText: "Type here ",
+                            enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                              color: Colors.grey,
+                            )),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal:
+                                     screenWidth *
+                                        0.003,
+                                vertical:
+                                     screenWidth *
+                                        0.03),
+                          )),
+                    ),
                     SizedBox(
-                      width:  screenWidth * 0.04,
+                      height:  screenHeight * 0.1,
                     ),
-                    CircleAvatar(
-                      radius: 21,
-                      backgroundImage: AssetImage(
-                          "assets/img/history.jpg"), // i get it from data base
-                    ),
-                    SizedBox(
-                      width:  screenWidth * 0.04,
-                    ),
-                    Text(
-                      " username",
-                      style:
-                          TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                    ), // iget it from data base
+                     myelvatedbottom(
+                      onPressed: _submitForm,
+                      text: 'Sumbit',
+                     ),
                   ],
                 ),
-                Divider(),
-                SizedBox(
-                  height:  screenHeight * 0.02,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                        left:  screenWidth * 0.075,
-                        top:  screenWidth * 0.05,
-                      ),
-                  child: images.isEmpty
-                      ? ImagePalceholder(
-                          imageError: false,
-                          bookImage: forumImage,
-                          pickImages:  _pickImages,
-                          showErrorMessage: false,
-                        )
-                      : SizedBox(
-                          height:  screenHeight * 0.13,
-                          child: _buildImageGrid()),
-                ),
-                SizedBox(
-                  height:  screenHeight * 0.05,
-                ),
-                Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      FractionallySizedBox(
-                          widthFactor: 0.9,
-                          child: Text(
-                            "🌍 Share relevant topics with the community",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          )),
-                      FractionallySizedBox(
-                        widthFactor: 0.9,
-                        child: TextField(
-                            controller: _decriptioncontroller,
-                            decoration: InputDecoration(
-                              hintText: "Type here ",
-                              enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                color: Colors.grey,
-                              )),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal:
-                                       screenWidth *
-                                          0.003,
-                                  vertical:
-                                       screenWidth *
-                                          0.03),
-                            )),
-                      ),
-                      SizedBox(
-                        height:  screenHeight * 0.1,
-                      ),
-                       myelvatedbottom(
-                        onPressed: _submitForm,
-                        text: 'Sumbit',
-                       ),
-                    ],
-                  ),
-                )
-              ],
-            ),
+              )
+            ],
           ),
         ),
       ),

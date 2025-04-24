@@ -45,15 +45,10 @@ class Usercard extends StatelessWidget {
                 SizedBox(
                   width: screenWidth * 0.01,
                 ),
-                Icon(
-                  Icons.star,
-                  color: Colors.yellow,
-                  size: 17,
-                ),
                 Text(
-                  "9.8",// herer inedd a solution for rating is double and the text is string 
-                  style: TextStyle(fontSize: 12),
+                  "200 followers",style: TextStyle(fontSize: 9),
                 ),
+                
               ],
             ),
           ),

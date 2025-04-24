@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mini_project/theApp_screans.dart/models/book.dart';
 import 'package:mini_project/theApp_screans.dart/navigationbottombar.dart';
 import 'package:mini_project/theApp_screans.dart/providers/saved-books-provider.dart';
+import 'package:mini_project/theApp_screans.dart/screans/otherusersProfile.dart';
 
 import 'package:mini_project/theApp_screans.dart/screans/profilecurrentuser.dart';
 
