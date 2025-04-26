@@ -83,7 +83,7 @@ class _CommunitycardState extends State<Communitycard> {
                           IconButton(
                               onPressed: () {
                                 showReportOptions(context, (selectedReason) {
-                                print("the reason:$selectedReason");
+                                // print("the reason:$selectedReason");
                   });
                               },
                               icon: Icon(
@@ -254,7 +254,7 @@ class _CommunitycardState extends State<Communitycard> {
         ],
       );
     }
-    return Container(
+    return SizedBox(
       width: screenWidth * 0.8,
       height: screenHeight * 0.18,
       child: Row(

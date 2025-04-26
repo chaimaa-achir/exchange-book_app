@@ -6,7 +6,8 @@ import 'package:mini_project/theApp_screans.dart/models/user.dart';
 class Usercard extends StatelessWidget {
   final User user;
   final VoidCallback ontapUser;
-  const Usercard({Key? key, required this.user, required this.ontapUser}) : super(key: key);
+  const Usercard({super.key, required this.user, required this.ontapUser});
+  @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
       final screenWidth = MediaQuery.of(context).size.width;

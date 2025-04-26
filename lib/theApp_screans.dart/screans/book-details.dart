@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, file_names
 
 import 'package:flutter/material.dart';
 import 'package:mini_project/helpers/time_utils.dart';
@@ -9,6 +9,7 @@ import 'package:mini_project/theApp_screans.dart/widgets/report_dailog.dart';
 //import 'package:mini_project/theApp_screans.dart/widgets/currentlocation.dart';
 import 'package:provider/provider.dart';
 import 'package:mini_project/theApp_screans.dart/providers/saved-books-provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class BookDetails extends StatefulWidget {
   final Book book;
@@ -22,6 +23,18 @@ class BookDetails extends StatefulWidget {
 }
 
 class _BookDetailsState extends State<BookDetails> {
+  GoogleMapController? _mapController;
+
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+  }
+
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -36,7 +49,7 @@ class _BookDetailsState extends State<BookDetails> {
           IconButton(
               onPressed: () {
                 showReportOptions(context, (selectedReason) {
-                  print("the reason:$selectedReason");
+                  // print("the reason:$selectedReason");
                 });
               },
               icon: Icon(
@@ -115,8 +128,7 @@ class _BookDetailsState extends State<BookDetails> {
                               "added in ${timeAgo(widget.book.postDate)}",
                               style: TextStyle(
                                   fontSize: 9,
-                                  color:
-                                      const Color.fromARGB(255, 74, 72, 72)),
+                                  color: const Color.fromARGB(255, 74, 72, 72)),
                             )
                           ],
                         )
@@ -144,15 +156,38 @@ class _BookDetailsState extends State<BookDetails> {
                     ],
                     Text(
                       "Location",
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ]),
             ),
             SizedBox(
               height: screenHeight * 0.29,
               width: screenWidth * 0.95,
-              //child: CurrentUserLocation(),
+              child: widget.book.latitude != null &&
+                      widget.book.longitude != null
+                  ? GoogleMap(
+                      onMapCreated: _onMapCreated,
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(
+                            widget.book.latitude!, widget.book.longitude!),
+                        zoom: 14,
+                      ),
+                      markers: {
+                        Marker(
+                          markerId: MarkerId('book_location'),
+                          position: LatLng(
+                              widget.book.latitude!, widget.book.longitude!),
+                          infoWindow: InfoWindow(title: widget.book.booktitel),
+                        ),
+                      },
+                    )
+                  : Center(
+                      child: Text(
+                        "No location available",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
             ),
             SizedBox(
               height: screenHeight * 0.05,
@@ -160,13 +195,15 @@ class _BookDetailsState extends State<BookDetails> {
             myelvatedbottom(
               onPressed: widget.book.availability
                   ? () {
-                       Navigator.push(
-                           context,
-                        MaterialPageRoute(builder: (context) =>RequestPage (book: widget.book)),
-                             );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                RequestPage(book: widget.book)),
+                      );
                     }
                   : null,
-              text: "Request this", // Disabled when false,
+              child:Text( "Request this",style: TextStyle(fontSize: 18,color: Colors.white)) , // Disabled when false,
             ),
             SizedBox(
               height: screenHeight * 0.07,

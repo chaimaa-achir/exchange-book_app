@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types
+
 import 'package:flutter/material.dart';
 import 'package:mini_project/shared/notification-menu-icons.dart';
 import 'package:mini_project/theApp_screans.dart/models/book.dart';

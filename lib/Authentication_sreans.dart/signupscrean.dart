@@ -1,11 +1,45 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unused_local_variable, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'dart:convert'; // For json.encode / decode
+import 'package:http/http.dart' as http;
 import 'package:mini_project/Authentication_sreans.dart/login.dart';
 import 'package:mini_project/Authentication_sreans.dart/termandconditions.dart';
 import 'package:mini_project/Authentication_sreans.dart/verifyCode.dart';
-import 'package:mini_project/shared/costumeelevatedBottom.dart';
+import 'package:mini_project/shared/costumeelevatedBottom.dart'; // For making HTTP requests
+
+Future<Map<String, dynamic>> registerUser({
+  required String fullname,
+  required String username,
+  required String email,
+  required String password,
+}) async {
+  final url = Uri.parse('https://books-paradise.onrender.com/auth/register');
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: json.encode({
+        "email": email,
+        "username": username,
+        "password": password,
+        "fullname": fullname,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      return {"success": true, "data": json.decode(response.body)};
+    } else {
+      final error = json.decode(response.body)['message'];
+      return {"success": false, "message": error ?? "Registration failed"};
+    }
+  } catch (e) {
+    return {"success": false, "message": "Error: $e"};
+  }
+}
+// For UI elements like ScaffoldMessenger
 
 class Signupscrean extends StatefulWidget {
   const Signupscrean({super.key,required this.isAgree});
@@ -17,9 +51,13 @@ class Signupscrean extends StatefulWidget {
 
 final TextEditingController _emailController = TextEditingController();
 final TextEditingController _fullnameController = TextEditingController();
+final TextEditingController _usernameController = TextEditingController();
+final TextEditingController _passwordController = TextEditingController();
+final TextEditingController _confirmPasswordController =
+    TextEditingController();
 
 class _SignupscreanState extends State<Signupscrean> {
-  bool _isPasswordVisible1 = true;
+  bool _isPasswordVisible = true;
   bool _isPasswordVisible2 = true;
   bool isChecked = false;
   String? email;
@@ -53,22 +91,22 @@ class _SignupscreanState extends State<Signupscrean> {
                 Text(
                   "Create Account",
                   style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 27),
+                    color: Colors.black,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 27,
+                  ),
                 ),
                 Center(
                   child: Text(
                     textAlign: TextAlign.center,
                     "fill your information below or register\nwith your social account ",
                     style: TextStyle(
-                        color: Color.fromARGB(255, 139, 139, 139),
-                        fontSize: 12),
+                      color: Color.fromARGB(255, 139, 139, 139),
+                      fontSize: 12,
+                    ),
                   ),
                 ),
-                SizedBox(
-                  height: screenHeight * 0.03,
-                ),
+                SizedBox(height: screenHeight * 0.03),
                 FractionallySizedBox(
                   widthFactor: 0.9,
                   child: Text(
@@ -84,8 +122,10 @@ class _SignupscreanState extends State<Signupscrean> {
                     controller: _fullnameController,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 7,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(9)),
                         borderSide: BorderSide.none,
@@ -107,10 +147,13 @@ class _SignupscreanState extends State<Signupscrean> {
                   width: MediaQuery.of(context).size.width * 0.9,
                   height: screenHeight * 0.05,
                   child: TextField(
+                    controller: _usernameController,
                     keyboardType: TextInputType.name,
                     decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 7,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(9)),
                         borderSide: BorderSide.none,
@@ -120,9 +163,7 @@ class _SignupscreanState extends State<Signupscrean> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: screenHeight * 0.004,
-                ),
+                SizedBox(height: screenHeight * 0.004),
                 FractionallySizedBox(
                   widthFactor: 0.9,
                   child: Text(
@@ -138,8 +179,10 @@ class _SignupscreanState extends State<Signupscrean> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 7,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(9)),
                         borderSide: BorderSide.none,
@@ -150,9 +193,7 @@ class _SignupscreanState extends State<Signupscrean> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: screenHeight * 0.004,
-                ),
+                SizedBox(height: screenHeight * 0.004),
                 FractionallySizedBox(
                   widthFactor: 0.9,
                   child: Text(
@@ -165,11 +206,14 @@ class _SignupscreanState extends State<Signupscrean> {
                   width: MediaQuery.of(context).size.width * 0.9,
                   height: screenHeight * 0.05,
                   child: TextField(
+                    controller: _passwordController,
                     keyboardType: TextInputType.emailAddress,
-                    obscureText: _isPasswordVisible1,
+                    obscureText: _isPasswordVisible,
                     decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 7,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(9)),
                         borderSide: BorderSide.none,
@@ -177,20 +221,20 @@ class _SignupscreanState extends State<Signupscrean> {
                       filled: true,
                       fillColor: Colors.grey[200],
                       suffixIcon: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _isPasswordVisible1 = !_isPasswordVisible1;
-                            });
-                          },
-                          child: _isPasswordVisible1
-                              ? Icon(Icons.visibility_off)
-                              : Icon(Icons.visibility)),
+                        onTap: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                        child:
+                            _isPasswordVisible
+                                ? Icon(Icons.visibility_off)
+                                : Icon(Icons.visibility),
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: screenHeight * 0.004,
-                ),
+                SizedBox(height: screenHeight * 0.004),
                 FractionallySizedBox(
                   widthFactor: 0.9,
                   child: Text(
@@ -203,11 +247,14 @@ class _SignupscreanState extends State<Signupscrean> {
                   width: MediaQuery.of(context).size.width * 0.9,
                   height: screenHeight * 0.05,
                   child: TextField(
+                    controller: _confirmPasswordController,
                     keyboardType: TextInputType.emailAddress,
                     obscureText: _isPasswordVisible2,
                     decoration: InputDecoration(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 7,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(9)),
                         borderSide: BorderSide.none,
@@ -215,32 +262,34 @@ class _SignupscreanState extends State<Signupscrean> {
                       filled: true,
                       fillColor: Colors.grey[200],
                       suffixIcon: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _isPasswordVisible2 = !_isPasswordVisible2;
-                            });
-                          },
-                          child: _isPasswordVisible2
-                              ? Icon(Icons.visibility_off)
-                              : Icon(Icons.visibility)),
+                        onTap: () {
+                          setState(() {
+                            _isPasswordVisible2 = !_isPasswordVisible2;
+                          });
+                        },
+                        child:
+                            _isPasswordVisible2
+                                ? Icon(Icons.visibility_off)
+                                : Icon(Icons.visibility),
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: screenHeight * 0.0001,
-                ),
+                SizedBox(height: screenHeight * 0.0001),
                 Row(
                   children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.009,
-                    ),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.009),
                     Checkbox(
                       checkColor: Colors.white,
                       activeColor: Color.fromARGB(255, 160, 107, 186),
                       side: BorderSide(
                         // Customize the border
-                        color:
-                            Color.fromARGB(255, 160, 107, 186), // Border color
+                        color: Color.fromARGB(
+                          255,
+                          160,
+                          107,
+                          186,
+                        ), // Border color
                         width: 2.0, // Border thickness
                       ),
                       value: isChecked,
@@ -250,50 +299,94 @@ class _SignupscreanState extends State<Signupscrean> {
                         });
                       },
                     ),
-                    Text(
-                      "Agree with ",
-                      style: TextStyle(fontSize: 13),
-                    ),
+                    Text("Agree with ", style: TextStyle(fontSize: 13)),
                     InkWell(
-                        onTap: () {
-                          Navigator.push(
+                      onTap: () {
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => TermsAndConditionsPage(
                                       // onAgree: _updateCheckboxState,
                                     )),
                           );
-                        },
-                        child: Text(
-                          "Terms and Conditions ",
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 160, 107, 186),
-                              fontSize: 13),
-                        )),
+                      },
+                      child: Text(
+                        "Terms and Conditions ",
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 160, 107, 186),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-                SizedBox(
-                  height: screenHeight * 0.025,
-                ),
-                myelvatedbottom(
-                  text: "Sign up",
-                  onPressed: () async {
-                    final String fullname = _fullnameController.text.trim();
-                    final String emailUser = _emailController.text.trim();
+                SizedBox(height: screenHeight * 0.025),
 
-                    if (emailUser.isNotEmpty && fullname.isNotEmpty) {
+                myelvatedbottom(
+                 child:Text("Sign up" ,style: TextStyle(fontSize: 18,color: Colors.white)) ,
+                  onPressed: () async {
+                    final fullname = _fullnameController.text.trim();
+                    final username = _usernameController.text.trim();
+                    final emailUser = _emailController.text.trim();
+                    final password = _passwordController.text.trim();
+                    final confirmPassword =
+                        _confirmPasswordController.text.trim();
+
+                    if (!isChecked) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "Please agree to the Terms and Conditions",
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+
+                    if (fullname.isEmpty ||
+                        username.isEmpty ||
+                        emailUser.isEmpty ||
+                        password.isEmpty ||
+                        confirmPassword.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Please fill all fields")),
+                      );
+                      return;
+                    }
+
+                    if (password != confirmPassword) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Passwords do not match")),
+                      );
+                      return;
+                    }
+
+                    final result = await registerUser(
+                      fullname: fullname,
+                      username: username,
+                      email: emailUser,
+                      password: password,
+                      
+                    );
+
+                    if (result['success']) {
                       if (!context.mounted) return;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => Verifycode(email: emailUser)),
+                          builder: (context) => Verifycode(email: emailUser),
+                        ),
                       );
+                    } else {
+                       if(mounted){
+                          ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(result['message'])),
+                      );
+                       }
                     }
                   },
                 ),
-                SizedBox(
-                  height: screenHeight * 0.037,
-                ),
+                SizedBox(height: screenHeight * 0.037),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -303,10 +396,7 @@ class _SignupscreanState extends State<Signupscrean> {
                     ),
                     Text(
                       "Or Sign up with",
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.black54,
-                      ),
+                      style: TextStyle(fontSize: 11, color: Colors.black54),
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.31,
@@ -314,9 +404,7 @@ class _SignupscreanState extends State<Signupscrean> {
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: screenHeight * 0.03,
-                ),
+                SizedBox(height: screenHeight * 0.03),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -340,9 +428,7 @@ class _SignupscreanState extends State<Signupscrean> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.12,
-                    ),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.12),
                     InkWell(
                       onTap: () {},
                       child: Container(
@@ -363,9 +449,7 @@ class _SignupscreanState extends State<Signupscrean> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.12,
-                    ),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.12),
                     InkWell(
                       onTap: () {},
                       child: InkWell(
@@ -391,9 +475,7 @@ class _SignupscreanState extends State<Signupscrean> {
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: screenHeight * 0.04,
-                ),
+                SizedBox(height: screenHeight * 0.04),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -402,23 +484,26 @@ class _SignupscreanState extends State<Signupscrean> {
                       style: TextStyle(fontSize: 12),
                     ),
                     GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Loginscrean()),
-                          );
-                        },
-                        child: Text("Log in ",
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 160, 107, 186),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14))),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Loginscrean(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "Log in ",
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 160, 107, 186),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-                SizedBox(
-                  height: screenHeight * 0.1,
-                ),
+                SizedBox(height: screenHeight * 0.1),
               ],
             ),
           ),

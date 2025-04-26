@@ -1,5 +1,6 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:mini_project/theApp_screans.dart/screans/add-book.dart';
 import 'package:mini_project/theApp_screans.dart/screans/add-forum.dart';
 import 'package:mini_project/theApp_screans.dart/screans/community.dart';
@@ -9,7 +10,8 @@ import 'package:mini_project/theApp_screans.dart/screans/save.dart';
 
 class Navigationbar extends StatefulWidget {
     final int initialIndex;
-  const Navigationbar({Key? key, this.initialIndex = 0}) : super(key: key);
+    
+  const Navigationbar({super.key, this.initialIndex = 0});
 
   @override
   State<Navigationbar> createState() => _NavigationbarState();
@@ -18,7 +20,7 @@ class Navigationbar extends StatefulWidget {
 class _NavigationbarState extends State<Navigationbar> {
 late int _selectedIndex;
 late int _intPage;
-  final GlobalKey<CurvedNavigationBarState> _curvedNavigationKey = GlobalKey();
+  
 
   void _onItemTapped(int index) {
     setState(() {

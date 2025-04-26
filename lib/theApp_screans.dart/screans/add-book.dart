@@ -1,12 +1,10 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, file_names
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:dotted_border/dotted_border.dart';
-
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:io';
-//import 'package:mini_project/theApp_screans.dart/widgets/currentlocation.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:mini_project/helpers/getlocation.dart';
 import 'package:mini_project/shared/costumeTextfeaildForm.dart';
 import 'package:mini_project/shared/costumeelevatedBottom.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/image-placeholder.dart';
@@ -35,6 +33,20 @@ class _AddbookscreanState extends State<Addbookscrean> {
   final TextEditingController _descriptioncontroller = TextEditingController();
   final TextEditingController _pricecontroller = TextEditingController();
   List<File> images = [];
+  LatLng? savedLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    loadSavedLocation();
+  }
+
+  Future<void> loadSavedLocation() async {
+    final location = await LocationStorage.getSavedLocation();
+    setState(() {
+      savedLocation = location;
+    });
+  }
 
   Future<void> _pickSingleImage() async {
     final pickedFile =
@@ -50,7 +62,7 @@ class _AddbookscreanState extends State<Addbookscrean> {
   void _submitForm() {
     setState(() {
       // Ensure that imageError is true if no images are selected
-      imageError = bookImage==null;
+      imageError = bookImage == null;
       selectedOption = tempSelectedOption;
     });
 
@@ -147,11 +159,11 @@ class _AddbookscreanState extends State<Addbookscrean> {
                             ],
                           ),
                         ),
-    
+
                         SizedBox(
                           height: screenHeight * 0.02,
                         ),
-    
+
                         // Author Input
                         FractionallySizedBox(
                           widthFactor: 0.9,
@@ -183,11 +195,11 @@ class _AddbookscreanState extends State<Addbookscrean> {
                             ],
                           ),
                         ),
-    
+
                         SizedBox(
                           height: screenHeight * 0.02,
                         ),
-    
+
                         FractionallySizedBox(
                           widthFactor: 0.9,
                           child: Column(
@@ -211,9 +223,10 @@ class _AddbookscreanState extends State<Addbookscrean> {
                             ],
                           ),
                         ),
-    
+
                         SizedBox(
                           height: screenHeight * 0.02,
+                          
                         ),
                         FractionallySizedBox(
                             widthFactor: 0.9,
@@ -229,16 +242,14 @@ class _AddbookscreanState extends State<Addbookscrean> {
                           child: DropdownButtonFormField(
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.grey)),
+                                    borderSide: BorderSide(color: Colors.grey)),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                       color:
                                           Color.fromARGB(255, 160, 107, 186)),
                                 ),
                                 errorBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.red)),
+                                    borderSide: BorderSide(color: Colors.red)),
                                 contentPadding: EdgeInsets.symmetric(
                                   horizontal: screenWidth * 0.03,
                                   vertical: screenHeight * 0.002,
@@ -306,15 +317,19 @@ class _AddbookscreanState extends State<Addbookscrean> {
                             KeyboardType: TextInputType.number,
                           ),
                         ),
-    
+
                         SizedBox(
                           height: screenHeight * 0.01,
                         ),
                         FractionallySizedBox(
                             widthFactor: 0.9,
                             child: Text("Your location (approx)")),
+                            SizedBox(
+                              height: screenHeight * 0.02,
+                            ),
                         SizedBox(
-                          height: screenHeight * 0.02,
+                          height: screenHeight * 0.01,
+                          
                         ),
                       ],
                     ),
@@ -325,15 +340,39 @@ class _AddbookscreanState extends State<Addbookscrean> {
                         SizedBox(
                           height: screenHeight * 0.29,
                           width: screenWidth * 0.95,
-                          //child: CurrentUserLocation(),
+                          child: savedLocation != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: GoogleMap(
+                                    initialCameraPosition: CameraPosition(
+                                      target: savedLocation!,
+                                      zoom: 15,
+                                    ),
+                                    markers: {
+                                      Marker(
+                                        markerId: MarkerId("saved_location"),
+                                        position: savedLocation!,
+                                      ),
+                                    },
+                                    zoomControlsEnabled: false,
+                                    myLocationEnabled: false,
+                                    onMapCreated: (controller) {},
+                                  ),
+                                )
+                              : Center(
+                                  child: Text(
+                                    'No location saved.',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
                         ),
                         SizedBox(
                           height: screenHeight * 0.04,
                         ),
-                         myelvatedbottom(
+                        myelvatedbottom(
                           onPressed: _submitForm,
-                          text: "Sumbit",
-                         ),
+                          child:Text("Sumbit", style: TextStyle(fontSize: 18,color: Colors.white)) ,
+                        ),
                         SizedBox(
                           height: screenHeight * 0.07,
                         ),

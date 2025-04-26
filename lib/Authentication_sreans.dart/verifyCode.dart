@@ -1,12 +1,28 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, file_names, unused_local_variable, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:mini_project/Authentication_sreans.dart/asklocation.scree.dart';
 import 'package:mini_project/shared/costumeelevatedBottom.dart';
 import 'package:mini_project/theApp_screans.dart/navigationbottombar.dart';
-import 'package:mini_project/theApp_screans.dart/screans/home.dart';
+import 'dart:convert';
+
 //import 'package:mini_project/theApp_screans.dart/home_page.dart';
 
 import 'package:pin_code_fields/pin_code_fields.dart';
+
+Future<http.Response> verifyEmail(String email, String confirmationCode) async {
+  final url =
+      Uri.parse('https://books-paradise.onrender.com/auth/verify-email');
+  return await http.patch(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'email': email,
+      'confirmationCode': confirmationCode,
+    }),
+  );
+}
 
 class Verifycode extends StatefulWidget {
   final String email;
@@ -19,6 +35,38 @@ class Verifycode extends StatefulWidget {
 final TextEditingController _otpcontroller = TextEditingController();
 
 class _VerifyCodeState extends State<Verifycode> {
+  Future<void> resendConfirmationCode(String email) async {
+    final url = Uri.parse(
+        'https://books-paradise.onrender.com/auth/resend-confirmation-code');
+
+    try {
+      final response = await http.patch(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'email': email}),
+      );
+
+      final responseData = json.decode(response.body);
+       if(mounted){
+          if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'])),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'])),
+        );
+      }
+       }
+    } catch (e) {
+       if(mounted){
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Something went wrong. Please try again.")),
+      );
+       }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -46,7 +94,7 @@ class _VerifyCodeState extends State<Verifycode> {
               Center(
                 child: Text(
                   textAlign: TextAlign.center,
-                  "Please enter the code that we just send it to u ",
+                  "Please enter the code that we just send it to your email. ",
                   style: TextStyle(
                       color: Color.fromARGB(255, 139, 139, 139), fontSize: 12),
                 ),
@@ -94,64 +142,50 @@ class _VerifyCodeState extends State<Verifycode> {
                 style: TextStyle(
                     color: Color.fromARGB(255, 139, 139, 139), fontSize: 12),
               ),
-              GestureDetector(onTap: () {}, child: Text("Resend code")),
+              GestureDetector(
+                onTap: () async {
+                  await resendConfirmationCode(widget.email);
+                },
+                child: Text(
+                  "Resend code",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 160, 107, 186),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
               SizedBox(
                 height: screenHeight * 0.03,
               ),
-              // FractionallySizedBox(
-              //   widthFactor: 0.9,
-              //   child: ElevatedButton(
-              //     onPressed: () async {
-              //       String optenter = _otpcontroller.text;
-              //       if (optenter.isEmpty || optenter.length < 6) {
-              //         ScaffoldMessenger.of(context).showSnackBar(
-              //             SnackBar(content: Text('Please enter a valid Code')));
-              //         return;
-              //       } else {
-              //         Navigator.pushReplacement(
-              //           context,
-              //           MaterialPageRoute(
-              //               builder: (context) =>
-              //                   Navigationbar(initialIndex: 0)),
-              //         );
-              //       }
-              //     },
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor:
-              //           Color.fromARGB(255, 160, 107, 186), // Button color
-              //       padding: EdgeInsets.all(8), // Padding
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius:
-              //             BorderRadius.circular(25), // Rounded corners
-              //       ),
-              //       elevation: 8, // Shadow effect
-              //       shadowColor:
-              //           Colors.deepPurple.withOpacity(0.9), // Shadow color
-              //     ),
-              //     child: Text(
-              //       "Verify",
-              //       style: TextStyle(
-              //           fontSize: 18,
-              //           color: Colors.white,
-              //           fontWeight: FontWeight.bold),
-              //     ),
-              //   ),
-              // ),
-                myelvatedbottom(
-                text: "Verify",
-                onPressed:  () async {
-                    String optenter = _otpcontroller.text;
-                    if (optenter.isEmpty || optenter.length < 6) {
+              
+               myelvatedbottom(
+                child: Text( "Verify",style: TextStyle(fontSize: 18,color: Colors.white)),
+                onPressed:  ()async {
+                    String otp = _otpcontroller.text;
+                    if (otp.isEmpty || otp.length < 6) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Please enter a valid Code')));
-                      return;
-                    } else {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                Navigationbar(initialIndex: 0)),
+                        SnackBar(content: Text('Please enter a valid Code')),
                       );
+                      return;
+                    }
+
+                    final response = await verifyEmail(widget.email, otp);
+
+                    if (response.statusCode == 200) {
+                     if(mounted){
+                        Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) =>AsklocationsPage()),
+                      );
+                     }
+                    } else {
+                      final errorMessage =
+                          json.decode(response.body)['message'];
+                       if(mounted){
+                        ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(errorMessage)),
+                      );
+                       }
                     }
                   },
               ),

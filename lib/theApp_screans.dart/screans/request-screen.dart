@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:mini_project/shared/costumeelevatedBottom.dart';
 import 'package:mini_project/theApp_screans.dart/models/book.dart';
@@ -157,7 +159,7 @@ class _RequestPageState extends State<RequestPage> {
               ),
     
               /// Send button
-              myelvatedbottom(onPressed: () {}, text: "Send request"),
+              myelvatedbottom(onPressed: () {}, child:Text("Send request", style: TextStyle(fontSize: 18,color: Colors.white))),
             ],
           ),
         ),
@@ -192,6 +194,8 @@ class SelectExchangeBookPage extends StatelessWidget {
       category: "",
     ),
   ];
+
+   SelectExchangeBookPage({super.key});
 
   @override
   Widget build(BuildContext context) {

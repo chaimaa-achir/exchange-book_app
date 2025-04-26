@@ -1,8 +1,8 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:mini_project/helpers/string_utils.dart';
 import 'package:mini_project/theApp_screans.dart/models/book.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class Bookcard extends StatelessWidget {
@@ -11,11 +11,11 @@ class Bookcard extends StatelessWidget {
   final VoidCallback ontapowner;
 
   const Bookcard({
-    Key? key,
+    super.key,
     required this.book,
     required this.ontapbook,
     required this.ontapowner,
-  }) : super(key: key);
+  });
 
   bool _isNetworkUrl(String url) {
     return url.startsWith('http://') || url.startsWith('https://');

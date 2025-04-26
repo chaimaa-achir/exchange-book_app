@@ -1,9 +1,9 @@
+// ignore_for_file: unnecessary_null_comparison, file_names
+
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:mini_project/shared/costumeelevatedBottom.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/image-placeholder.dart';
 
@@ -158,7 +158,7 @@ Future<void> _pickImages() async {
                     ),
                      myelvatedbottom(
                       onPressed: _submitForm,
-                      text: 'Sumbit',
+                      child:Text("Sumbit", style: TextStyle(fontSize: 18,color: Colors.white)),
                      ),
                   ],
                 ),
@@ -228,7 +228,7 @@ Future<void> _pickImages() async {
           dashPattern: [6, 3],
           borderType: BorderType.RRect,
           radius: Radius.circular(10),
-          child: Container(
+          child: SizedBox(
             height:  screenHeight * 0.2,
             width:  screenWidth * 0.25,
             child: Center(

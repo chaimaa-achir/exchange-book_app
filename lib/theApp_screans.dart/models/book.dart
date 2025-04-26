@@ -11,8 +11,8 @@ class Book {
   final DateTime postDate;
   final bool availability;
   final String category;
-//  final double latitude;
-//  final double longitude;
+   final double? latitude;
+   final double? longitude;
   Book({
     required this.booktitel,
     required this.ownername,
@@ -25,6 +25,8 @@ class Book {
     
     required this.availability,
     required this.category,
+    this.latitude,
+    this.longitude,
 
     //  required this.latitude,
     //  required this.longitude, // for later when i work on google map api
@@ -44,7 +46,10 @@ class Book {
         description: "A fantasy novel about a young wizard.",
         postDate: DateTime(2025, 3, 25, 14, 30),
         availability: true,
-        category: "fantasy"),
+        category: "fantasy",
+        latitude: 34.8884,
+        longitude: -1.3151,
+        ),
     Book(
         booktitel: "evil under the sun",
         ownername: "hadji_asheer",

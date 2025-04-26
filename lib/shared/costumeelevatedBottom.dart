@@ -1,9 +1,11 @@
+// ignore_for_file: file_names, camel_case_types, deprecated_member_use
+
 import 'package:flutter/material.dart';
 
 class myelvatedbottom extends StatelessWidget {
-  const myelvatedbottom({super.key,required this.onPressed,required this.text});
+  const myelvatedbottom({super.key,required this.onPressed,required this.child});
   final VoidCallback? onPressed;
-  final String text;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +22,7 @@ class myelvatedbottom extends StatelessWidget {
           elevation: 8, // Shadow effect
           shadowColor: Colors.deepPurple.withOpacity(0.9), // Shadow color
         ),
-        child: Text(
-          text,
-          style: TextStyle(fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold),
-        ),
+        child:child,
       ),
     );
   }

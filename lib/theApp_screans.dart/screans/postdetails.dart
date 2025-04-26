@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_unnecessary_containers, non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:mini_project/helpers/comment_utils.dart';
 import 'package:mini_project/helpers/time_utils.dart';
@@ -85,7 +87,7 @@ class _PostdetailsState extends State<Postdetails> {
                                           InkWell(
                                             onTap:(){
                                               showReportOptions(context, (selectedReason) {
-                                         print("the reason:$selectedReason");
+                                        //  print("the reason:$selectedReason");
                                       });
                                             },
                                             child: Icon(Icons.flag_outlined, size: 26)
@@ -329,7 +331,7 @@ class _PostdetailsState extends State<Postdetails> {
                 InkWell(
                   onTap: (){
                     showReportOptions(context, (selectedReason) {
-                    print("the reason:$selectedReason");
+                    // print("the reason:$selectedReason");
                   });
                   },
                   child: Icon(Icons.flag_outlined)),

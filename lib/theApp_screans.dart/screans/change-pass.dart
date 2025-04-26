@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:mini_project/helpers/validator.dart';
 import 'package:mini_project/shared/costumeelevatedBottom.dart';
@@ -157,9 +159,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 myelvatedbottom(
                   onPressed: () {
                     if (keyFromstate.currentState!.validate()) {}
-                    ;
+                    
                   },
-                  text:"Change Password",
+                  child:Text("Change Password", style: TextStyle(fontSize: 18,color: Colors.white)),
                 ),
               ],
             ),

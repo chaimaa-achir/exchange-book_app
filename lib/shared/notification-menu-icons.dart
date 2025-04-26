@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:mini_project/theApp_screans.dart/screans/notification-page.dart';
 
@@ -6,10 +8,10 @@ class NotificationMenuIcons extends StatelessWidget {
   final VoidCallback? onNotificationTap;
 
   const NotificationMenuIcons({
-    Key? key,
+    super.key,
     this.onMenuTap,
     this.onNotificationTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +47,7 @@ class NotificationMenuIcons extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Text(
-                  "12",
-
-                  /// get it form data base
+                  "12",  /// get it form data base
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 7,

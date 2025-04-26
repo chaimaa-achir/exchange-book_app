@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -5,6 +7,8 @@ import 'dart:convert';
 import 'package:mini_project/helpers/time_utils.dart';
 
 class NotificationsPage extends StatefulWidget {
+  const NotificationsPage({super.key});
+
   @override
   _NotificationsPageState createState() => _NotificationsPageState();
 }
@@ -168,7 +172,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   children: [
                                     TextButton(
                                       onPressed: () {
-                                        // TODO: handle accept logic here
+                                        
                                         setState(() {
                                           notifications[index]["read"] = true;
                                         });
@@ -180,7 +184,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                     SizedBox(width: 8),
                                     TextButton(
                                       onPressed: () {
-                                        // TODO: handle reject logic here
+                                        
                                         setState(() {
                                           notifications[index]["read"] = true;
                                         });

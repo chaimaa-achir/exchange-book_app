@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:mini_project/shared/notification-menu-icons.dart';
 import 'package:mini_project/theApp_screans.dart/screans/chatscreen.dart';
@@ -29,6 +31,7 @@ List<Map<String, String>> users = [
 class _MeesagePageState extends State<MeesagePage> {
   List<String> allItems = [];
   late SearchController _searchuser = SearchController();
+  @override
   void initState() {
     super.initState();
     

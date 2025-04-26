@@ -1,13 +1,18 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
+import 'package:mini_project/helpers/getlocation.dart';
 import 'package:mini_project/shared/notification-menu-icons.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/Booksdispalyhome.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/catigory-display.dart';
 //import 'package:http/http.dart';
 //import 'dart:convert';
-import 'package:mini_project/theApp_screans.dart/widgets/catigorybutton.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/drawer.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/searchbar.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/userdisplayhome.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoding/geocoding.dart';
+
 
 class Homesrean extends StatefulWidget {
   const Homesrean({super.key});
@@ -18,6 +23,7 @@ class Homesrean extends StatefulWidget {
 
 class _HomesreanState extends State<Homesrean> {
   List<String> allItems = [];
+  String? currentPlaceName;
 
   Map recivedata = {};
   late SearchController _searchController = SearchController();
@@ -25,6 +31,7 @@ class _HomesreanState extends State<Homesrean> {
   void initState() {
     super.initState();
     //fetchUsers();
+    loadCurrentUserLocationName();
 
     _searchController = SearchController();
   }
@@ -34,6 +41,34 @@ class _HomesreanState extends State<Homesrean> {
     _searchController.dispose();
     super.dispose();
   }
+
+
+void loadCurrentUserLocationName() async {
+  final LatLng? savedLocation = await LocationStorage.getSavedLocation();
+  if (savedLocation != null) {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        savedLocation.latitude,
+        savedLocation.longitude,
+      );
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+        setState(() {
+          currentPlaceName = '${place.locality}, ${place.country}';
+        });
+      }
+    } catch (e) {
+      print('Error loading place name: $e');
+      setState(() {
+        currentPlaceName = 'Unknown location';
+      });
+    }
+  } else {
+    setState(() {
+      currentPlaceName = 'Location not saved';
+    });
+  }
+}
 
 /*void fetchUsers() async {
    void fetchUsers() async {
@@ -111,7 +146,7 @@ class _HomesreanState extends State<Homesrean> {
                   InkWell(
                     onTap: () {},
                     child: Text(
-                      "tlemcen imama ",
+                    currentPlaceName ?? 'Loading...',
                       style: TextStyle(fontSize: 14, color: Colors.black87),
                     ),
                   ), // هذا المتغير يجب تحديده لاحقًا

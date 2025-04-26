@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:image_picker/image_picker.dart';
@@ -252,11 +254,11 @@ class _ProfileCurrentUserScreenState extends State<ProfileCurrentUserScreen> {
   }
 
   Widget _buildEditBioDialog(BuildContext context, String currentBio) {
-    TextEditingController _controller = TextEditingController(text: currentBio);
+    TextEditingController controller = TextEditingController(text: currentBio);
     return AlertDialog(
       title: Text("Edit Bio"),
       content: TextField(
-        controller: _controller,
+        controller: controller,
         maxLines: 4,
         decoration: InputDecoration(
           hintText: "Write something about yourself...",
@@ -267,7 +269,7 @@ class _ProfileCurrentUserScreenState extends State<ProfileCurrentUserScreen> {
         TextButton(
             onPressed: () => Navigator.pop(context), child: Text("Cancel")),
         ElevatedButton(
-            onPressed: () => Navigator.pop(context, _controller.text.trim()),
+            onPressed: () => Navigator.pop(context, controller.text.trim()),
             child: Text("Save")),
       ],
     );

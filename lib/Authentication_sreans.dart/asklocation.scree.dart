@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mini_project/Authentication_sreans.dart/currentlocation-page.dart';
 import 'package:mini_project/shared/costumeelevatedBottom.dart';
 
+
 class AsklocationsPage extends StatelessWidget {
   const AsklocationsPage({super.key});
 
@@ -52,10 +53,10 @@ class AsklocationsPage extends StatelessWidget {
                 Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => CurrentLocation()),
+                                builder: (context) => CurrentLocationPAge()),
                           );
               },
-              text: "Ok, let's go",
+            child: Text("Ok, let's go",style: TextStyle(fontSize: 18,color: Colors.white)),
              ),
           ],
         ),

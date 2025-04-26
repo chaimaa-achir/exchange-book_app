@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mini_project/Authentication_sreans.dart/login.dart';
 import 'package:mini_project/theApp_screans.dart/navigationbottombar.dart';
 import 'package:mini_project/theApp_screans.dart/screans/change-pass.dart';
-import 'package:mini_project/theApp_screans.dart/screans/community.dart';
-import 'package:mini_project/theApp_screans.dart/screans/home.dart';
-import 'package:mini_project/theApp_screans.dart/screans/meesagePage.dart';
 import 'package:mini_project/theApp_screans.dart/screans/profilecurrentuser.dart';
-import 'package:mini_project/theApp_screans.dart/screans/save.dart';
 
 class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({Key? key}) : super(key: key);
+  
+  const CustomDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
