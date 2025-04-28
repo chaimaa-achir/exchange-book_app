@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mini_project/Authentication_sreans.dart/login.dart';
-import 'package:mini_project/intro_screans.dart/onbording_screan.dart';
-import 'package:mini_project/theApp_screans.dart/navigationbottombar.dart';
 //import 'package:flutter/rendering.dart';
 
 
@@ -34,7 +32,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData.light(useMaterial3: true),
         showPerformanceOverlay: false,
-        home:Navigationbar(),
+        home:Loginscrean(),
       ),
     );
   }

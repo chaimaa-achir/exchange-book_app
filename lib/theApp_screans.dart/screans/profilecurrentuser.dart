@@ -1,12 +1,17 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, avoid_print
 
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileCurrentUserScreen extends StatefulWidget {
-  const ProfileCurrentUserScreen({super.key});
+  final Map<String, dynamic> user;
+  const ProfileCurrentUserScreen({super.key, required this.user});
 
   @override
   State<ProfileCurrentUserScreen> createState() =>
@@ -33,45 +38,77 @@ class _ProfileCurrentUserScreenState extends State<ProfileCurrentUserScreen> {
       });
     }
   }
+     Future<String> getToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('token') ?? '';
+}
+    Future<void> updateBio(String newBio, String token) async {
+      final url =
+          Uri.parse('https://books-paradise.onrender.com/profile/add-bio');
+
+      try {
+        final response = await http.patch(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: json.encode({
+            'bio': newBio,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          print('Updated effective bio');
+        } else {
+          print(' bio update failed, code: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Connection error: $e');
+      }
+    }
 
   Future<void> fetchProfileData() async {
-    await Future.delayed(Duration(seconds: 1));
+  // Get token from SharedPreferences
+  String token = await getToken();
 
-    String fetchedBio = "📚 Hii, I love reading and books!";
-    List<Map<String, dynamic>> fetchedBooks = [
-      {
-        "booktitel": "The Alchemist",
-        "bookstatus": "Exchange",
-        "bookimage": "assets/img/history.jpg",
-        "availability": true,
-      },
-      {
-        "booktitel": "Atomic Habits",
-        "bookstatus": "Lending",
-        "bookimage": "assets/img/history.jpg",
-        "availability": false,
-      },
-      {
-        "booktitel": "1984",
-        "bookstatus": "Sale",
-        "bookimage": "assets/img/history.jpg",
-        "availability": true,
-      },
-    ];
+  final url = Uri.parse('https://books-paradise.onrender.com/profile/posted-books');
 
-    setState(() {
-      aboutUser = fetchedBio;
-      userBooks = fetchedBooks;
-    });
+  try {
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Parse the response data (assuming the response is in JSON format)
+      List<Map<String, dynamic>> fetchedBooks = List<Map<String, dynamic>>.from(
+        json.decode(response.body)
+      );
+
+      setState(() {
+        
+        userBooks = fetchedBooks;
+      });
+    } else {
+      print('Failed to load books, code: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Connection error: $e');
   }
+}
 
+  // aboutUser = fetchedBio;
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: Text("UserName")),
+      appBar: AppBar(title: Text(widget.user['username'])),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
         child: Column(
@@ -85,10 +122,9 @@ class _ProfileCurrentUserScreenState extends State<ProfileCurrentUserScreen> {
                   children: [
                     CircleAvatar(
                       radius: 40,
-                      backgroundImage: _profileImage != null
-                          ? FileImage(_profileImage!)
-                          : AssetImage("assets/img/user.png")
-                              as ImageProvider,
+                      backgroundImage: widget.user['profileImage'] != null
+                          ? NetworkImage(widget.user['profileImage'])
+                          : AssetImage("assets/img/user.png") as ImageProvider,
                     ),
                     Positioned(
                       bottom: screenHeight * -0.015,
@@ -126,8 +162,15 @@ class _ProfileCurrentUserScreenState extends State<ProfileCurrentUserScreen> {
                     context: context,
                     builder: (_) => _buildEditBioDialog(context, aboutUser),
                   );
-                  if (newBio != null) {
-                    setState(() => aboutUser = newBio);
+                  if (newBio != null && newBio.isNotEmpty) {
+                    String token = await getToken();
+
+                    await updateBio(newBio, token);
+
+                    
+                    setState(() {
+                      aboutUser = newBio;
+                    });
                   }
                 },
                 icon: Icon(Icons.edit_note, color: Colors.white),
@@ -185,16 +228,16 @@ class _ProfileCurrentUserScreenState extends State<ProfileCurrentUserScreen> {
                           child: Stack(
                             children: [
                               Image.asset(
-                                book["bookimage"],
+                                book["cover_image"],
                                 height: 100,
                                 width: 100,
                                 fit: BoxFit.cover,
                               ),
-                              if (!book["availability"])
+                              if (!book["disponibility"])
                                 Positioned.fill(
                                   child: BackdropFilter(
-                                    filter: ImageFilter.blur(
-                                        sigmaX: 5, sigmaY: 5),
+                                    filter:
+                                        ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                                     child: Container(
                                       color: Colors.black.withOpacity(0.3),
                                       alignment: Alignment.center,
@@ -220,19 +263,18 @@ class _ProfileCurrentUserScreenState extends State<ProfileCurrentUserScreen> {
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color:
-                                        _getStatusColor(book["bookstatus"]),
+                                    color: _getStatusColor(book["transaction_type"]),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    book["bookstatus"],
+                                    book["transaction_type"],
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 10),
                                   ),
                                 ),
                                 SizedBox(height: 5),
                                 Text(
-                                  book["booktitel"],
+                                  book["title"],
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500),

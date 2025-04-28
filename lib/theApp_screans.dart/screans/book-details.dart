@@ -10,6 +10,7 @@ import 'package:mini_project/theApp_screans.dart/widgets/report_dailog.dart';
 import 'package:provider/provider.dart';
 import 'package:mini_project/theApp_screans.dart/providers/saved-books-provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class BookDetails extends StatefulWidget {
   final Book book;
@@ -33,6 +34,10 @@ class _BookDetailsState extends State<BookDetails> {
   void dispose() {
     _mapController?.dispose();
     super.dispose();
+  }
+
+  bool _isNetworkUrl(String url) {
+    return url.startsWith('http://') || url.startsWith('https://');
   }
 
   @override
@@ -63,12 +68,25 @@ class _BookDetailsState extends State<BookDetails> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-                width: double.infinity,
-                child: Image.asset(
-                  widget.book.bookimage,
-                  height: screenHeight * 0.3,
-                  fit: BoxFit.cover,
-                )),
+              width: double.infinity,
+              child: _isNetworkUrl(widget.book.bookimage)
+                  ? CachedNetworkImage(
+                      imageUrl: widget.book.bookimage,
+                      height: screenHeight * 0.3,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2)),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    )
+                  : Image.asset(
+                      widget.book.bookimage,
+                      height: screenHeight * 0.3,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+            ),
             Padding(
               padding: const EdgeInsets.only(right: 10.0),
               child: Row(
@@ -103,34 +121,46 @@ class _BookDetailsState extends State<BookDetails> {
                     Row(
                       children: [
                         CircleAvatar(
-                          radius: 30,
-                          backgroundImage: AssetImage(widget.book.ownerimage),
+                          backgroundImage: widget.book.ownerimage != null
+                              ? NetworkImage(widget.book.ownerimage!)
+                              : AssetImage("assets/img/user.png")
+                                  as ImageProvider,
                         ),
                         SizedBox(
                           width: screenWidth * 0.05,
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.book.ownername,
-                              style: TextStyle(fontSize: 15),
-                              textAlign: TextAlign.start,
-                            ),
-                            Center(
-                              child: Text(
-                                widget.book.booktitel,
-                                style: TextStyle(fontSize: 25),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.book.ownername,
+                                style: TextStyle(fontSize: 15),
                                 textAlign: TextAlign.start,
                               ),
-                            ),
-                            Text(
-                              "added in ${timeAgo(widget.book.postDate)}",
-                              style: TextStyle(
+                              Text(
+                                widget.book.booktitel,
+                                style: TextStyle(fontSize: 22),
+                                textAlign: TextAlign.start,
+                                maxLines: null,
+                              ),
+                              Text(
+                                "By ${widget.book.author}",
+                                style: TextStyle(fontSize: 15),
+                                textAlign: TextAlign.start,
+                                maxLines: null,
+                              ),
+                              Text(
+                                widget.book.postDate != null
+                                    ? "added in ${timeAgo(widget.book.postDate!)}"
+                                    : "No post date",
+                                style: TextStyle(
                                   fontSize: 9,
-                                  color: const Color.fromARGB(255, 74, 72, 72)),
-                            )
-                          ],
+                                  color: Color.fromARGB(255, 74, 72, 72),
+                                ),
+                              )
+                            ],
+                          ),
                         )
                       ],
                     ),
@@ -203,7 +233,10 @@ class _BookDetailsState extends State<BookDetails> {
                       );
                     }
                   : null,
-              child:Text( "Request this",style: TextStyle(fontSize: 18,color: Colors.white)) , // Disabled when false,
+              child: Text("Request this",
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white)), // Disabled when false,
             ),
             SizedBox(
               height: screenHeight * 0.07,

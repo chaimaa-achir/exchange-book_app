@@ -42,7 +42,8 @@ class Bookcard extends StatelessWidget {
           height: screenHeight * 0.12,
           width: screenWidth * 0.4,
           fit: BoxFit.cover,
-          placeholder: (context, url) => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          placeholder: (context, url) =>
+              const Center(child: CircularProgressIndicator(strokeWidth: 2)),
           errorWidget: (context, url, error) => const Icon(Icons.error),
         );
       } else {
@@ -127,10 +128,10 @@ class Bookcard extends StatelessWidget {
                       GestureDetector(
                         onTap: ontapowner,
                         child: CircleAvatar(
-                          radius: 18,
-                          backgroundImage: _isNetworkUrl(book.ownerimage)
-                              ? NetworkImage(book.ownerimage)
-                              : AssetImage(book.ownerimage) as ImageProvider,
+                          backgroundImage: book.ownerimage != null
+                              ? NetworkImage(book.ownerimage!)
+                              : AssetImage("assets/img/user.png")
+                                  as ImageProvider,
                         ),
                       ),
                       SizedBox(width: screenWidth * 0.01),
@@ -149,25 +150,27 @@ class Bookcard extends StatelessWidget {
             ),
           ),
           // Distance badge
-          Positioned(
-            bottom: 78,
-            right: 7.5,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 64, 64, 64),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                book.distence,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 6, 
+          if (book.distence != null)
+            Positioned(
+              bottom: 78,
+              right: 7.5,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 64, 64, 64),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  "${book.distence!} km",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 6,
+                  ),
                 ),
               ),
             ),
-          ),
+
           // Status badge
           Positioned(
             top: 2,

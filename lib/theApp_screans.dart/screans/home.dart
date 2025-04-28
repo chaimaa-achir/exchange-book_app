@@ -3,16 +3,16 @@
 import 'package:flutter/material.dart';
 import 'package:mini_project/helpers/getlocation.dart';
 import 'package:mini_project/shared/notification-menu-icons.dart';
+import 'package:mini_project/theApp_screans.dart/models/book.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/Booksdispalyhome.dart';
-import 'package:mini_project/theApp_screans.dart/widgets/catigory-display.dart';
-//import 'package:http/http.dart';
-//import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:mini_project/theApp_screans.dart/widgets/drawer.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/searchbar.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/userdisplayhome.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Homesrean extends StatefulWidget {
   const Homesrean({super.key});
@@ -22,8 +22,11 @@ class Homesrean extends StatefulWidget {
 }
 
 class _HomesreanState extends State<Homesrean> {
+   String? fullName;
   List<String> allItems = [];
   String? currentPlaceName;
+  late Future<List<Book>> mostRequestedBooksFuture;
+late Future<List<Book>> booksNearYouFuture;
 
   Map recivedata = {};
   late SearchController _searchController = SearchController();
@@ -32,6 +35,9 @@ class _HomesreanState extends State<Homesrean> {
     super.initState();
     //fetchUsers();
     loadCurrentUserLocationName();
+     mostRequestedBooksFuture = fetchMostRequestedBooks();
+  booksNearYouFuture = fetchBooksNearYou();
+  loadUserName();
 
     _searchController = SearchController();
   }
@@ -41,34 +47,120 @@ class _HomesreanState extends State<Homesrean> {
     _searchController.dispose();
     super.dispose();
   }
-
-
-void loadCurrentUserLocationName() async {
-  final LatLng? savedLocation = await LocationStorage.getSavedLocation();
-  if (savedLocation != null) {
-    try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        savedLocation.latitude,
-        savedLocation.longitude,
-      );
-      if (placemarks.isNotEmpty) {
-        final place = placemarks.first;
-        setState(() {
-          currentPlaceName = '${place.locality}, ${place.country}';
-        });
-      }
-    } catch (e) {
-      print('Error loading place name: $e');
-      setState(() {
-        currentPlaceName = 'Unknown location';
-      });
-    }
-  } else {
+  // Load the full name from SharedPreferences
+  void loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString('fullName'); // اسم المستخدم المحفوظ
     setState(() {
-      currentPlaceName = 'Location not saved';
+      fullName = name;
     });
   }
+  Future<List<Book>> fetchMostRequestedBooks() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    
+    
+    final token = prefs.getString('token');
+
+    
+    final latitude = prefs.getDouble('latitude');
+    final longitude = prefs.getDouble('longitude');
+
+    
+    if (token == null || latitude == null || longitude == null) {
+      print('⚠️ Missing token or location data.');
+      return [];
+    }
+
+    // تجهيز الرابط
+    final url = Uri.parse('https://books-paradise.onrender.com/home/most-requested?userLat=$latitude&userLon=$longitude');
+
+    // إرسال الطلب مع التوكين داخل الهيدر
+    var response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token', // هنا التوكين
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      print('Data received (Most Requested): $data');
+      return (data as List).map((e) => Book.fromJson(e)).toList();
+    } else {
+      print('⚠️ Failed to fetch: ${response.statusCode}');
+      return [];
+    }
+  } catch (e) {
+    print('Error fetching most requested books: $e');
+    return [];
+  }
 }
+
+
+Future<List<Book>> fetchBooksNearYou() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    final latitude = prefs.getDouble('latitude');
+    final longitude = prefs.getDouble('longitude');
+
+    if (token == null || latitude == null || longitude == null) {
+      print('⚠️ Missing token or location data.');
+      return [];
+    }
+
+    final url = Uri.parse('https://books-paradise.onrender.com/home/near-you?userLat=$latitude&userLon=$longitude');
+
+    var response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      print('Data received (Most Requested): $data');
+      return (data as List).map((e) => Book.fromJson(e)).toList();
+    } else {
+      print('⚠️ Error fetching books near you: ${response.statusCode}');
+      return [];
+    }
+  } catch (e) {
+    print('Error fetching books near you: $e');
+    return [];
+  }
+}
+
+  void loadCurrentUserLocationName() async {
+    final LatLng? savedLocation = await LocationStorage.getSavedLocation();
+    if (savedLocation != null) {
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          savedLocation.latitude,
+          savedLocation.longitude,
+        );
+        if (placemarks.isNotEmpty) {
+          final place = placemarks.first;
+          setState(() {
+            currentPlaceName = '${place.locality}, ${place.country}';
+          });
+        }
+      } catch (e) {
+        print('Error loading place name: $e');
+        setState(() {
+          currentPlaceName = 'Unknown location';
+        });
+      }
+    } else {
+      setState(() {
+        currentPlaceName = 'Location not saved';
+      });
+    }
+  }
 
 /*void fetchUsers() async {
    void fetchUsers() async {
@@ -94,35 +186,35 @@ void loadCurrentUserLocationName() async {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-          endDrawer: const CustomDrawer(),
+      endDrawer: const CustomDrawer(),
       backgroundColor: Color(0xFFFDFDFF),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: [
-            Padding(
-              padding: EdgeInsets.only(bottom:screenHeight*0.05,right: screenWidth*0.02),
-              child: NotificationMenuIcons(),
-            ),
+          Padding(
+            padding: EdgeInsets.only(
+                bottom: screenHeight * 0.05, right: screenWidth * 0.02),
+            child: NotificationMenuIcons(),
+          ),
         ],
         toolbarHeight: screenHeight * 0.13,
         backgroundColor: Colors.transparent,
         elevation: 0,
-         flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFE0C3FC), Color(0xFF8EC5FC)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFE0C3FC), Color(0xFF8EC5FC)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
         ),
-      ),
-        
         title: Column(
           children: [
             FractionallySizedBox(
               widthFactor: 1.050,
               child: Text(
-                " Welcome,FullName full namee ",
+                  fullName != null ? "Welcome, $fullName" : "Loading...",
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 24,
@@ -133,7 +225,7 @@ void loadCurrentUserLocationName() async {
             ),
             SizedBox(
               height: screenHeight * 0.02,
-             ),
+            ),
             FractionallySizedBox(
               widthFactor: 1.050,
               child: Row(
@@ -146,7 +238,7 @@ void loadCurrentUserLocationName() async {
                   InkWell(
                     onTap: () {},
                     child: Text(
-                    currentPlaceName ?? 'Loading...',
+                      currentPlaceName ?? 'Loading...',
                       style: TextStyle(fontSize: 14, color: Colors.black87),
                     ),
                   ), // هذا المتغير يجب تحديده لاحقًا
@@ -194,7 +286,7 @@ void loadCurrentUserLocationName() async {
               SizedBox(
                 height: screenHeight * 0.01,
               ),
-              Catigorydisplay(),
+              // Catigorydisplay(),
               SizedBox(
                 height: screenHeight * 0.02,
               ),
@@ -225,17 +317,32 @@ void loadCurrentUserLocationName() async {
                   ],
                 ),
               ),
-              Bookdispalyhome(),
-      
-                FractionallySizedBox(
+
+              // Bookdispalyhome(books: mostRequestedBooks),
+              FutureBuilder<List<Book>>(
+                future: mostRequestedBooksFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error loading books'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No books found'));
+                  } else {
+                    return Bookdispalyhome(books: snapshot.data!);
+                  }
+                },
+              ),
+
+              FractionallySizedBox(
                 widthFactor: 0.9,
-                child: const  Text(
-                    "Top users",
-                    style: TextStyle(
-                        color: Color(0xFF1A1A1A),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400),
-                  ),
+                child: const Text(
+                  "Top users",
+                  style: TextStyle(
+                      color: Color(0xFF1A1A1A),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400),
+                ),
               ),
               Userdisplayhome(),
               FractionallySizedBox(
@@ -248,7 +355,23 @@ void loadCurrentUserLocationName() async {
                       fontWeight: FontWeight.w400),
                 ),
               ),
-              Bookdispalyhome(),
+              FutureBuilder<List<Book>>(
+                future: booksNearYouFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error loading books'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(child: Text('No books found near you'));
+                  } else {
+                    return Bookdispalyhome(books: snapshot.data!);
+                  }
+                },
+              ),
+              SizedBox(
+              height: screenHeight * 0.1,
+            ),
             ],
           ),
         ),

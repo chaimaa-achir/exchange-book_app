@@ -5,7 +5,8 @@ import 'package:mini_project/theApp_screans.dart/widgets/bookcard.dart';
 
 
 class Bookdispalyhome extends StatelessWidget {
-  const Bookdispalyhome({super.key});
+  final List<Book> books;
+  const Bookdispalyhome({super.key,required this.books});
   
 
   @override

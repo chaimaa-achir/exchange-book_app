@@ -1,19 +1,69 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mini_project/Authentication_sreans.dart/login.dart';
 import 'package:mini_project/theApp_screans.dart/navigationbottombar.dart';
 import 'package:mini_project/theApp_screans.dart/screans/change-pass.dart';
 import 'package:mini_project/theApp_screans.dart/screans/profilecurrentuser.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class CustomDrawer extends StatelessWidget {
-  
+Future<void> logout() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.clear();
+}
+
+class CustomDrawer extends StatefulWidget {
   const CustomDrawer({super.key});
 
   @override
+  State<CustomDrawer> createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
+  String username = "";
+  String email = "";
+  String? userImage;
+  late Map<String, dynamic> userMap;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  Future<void> loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? userJson =
+        prefs.getString('user'); // جلب بيانات المستخدم المخزنة كـ JSON
+
+    if (userJson != null) {
+      userMap = jsonDecode(userJson); // فك تشفير البيانات إلى ماب
+      setState(() {
+        username = userMap['username'] ?? "Guest User";
+        email = userMap['email'] ?? "No Email";
+        userImage = userMap['profile_picture'];
+        isLoading = false;
+      });
+    } else {
+      // لو مفيش بيانات محفوظة، لو مستخدم جديد أو تم مسح البيانات
+      setState(() {
+        username = "Guest User";
+        email = "No Email";
+        userImage = null;
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
     return Drawer(
       child: Column(
         children: [
-          // فقط هذا الجزء فيه التدرج
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -26,32 +76,34 @@ class CustomDrawer extends StatelessWidget {
               padding: const EdgeInsets.all(10.0),
               child: UserAccountsDrawerHeader(
                 decoration: BoxDecoration(
-                  color: Colors.transparent, // لازم عشان ما يغطي التدرج
+                  color: Colors.transparent,
                 ),
                 accountName: Text(
-                  "Ali Hassan",
+                  username,
                   style: TextStyle(color: Colors.white),
                 ),
                 accountEmail: Text(
-                  "ali@yahoo.com",
+                  email,
                   style: TextStyle(color: Colors.white),
                 ),
-                currentAccountPictureSize: Size.square(80),
                 currentAccountPicture: CircleAvatar(
-                  backgroundImage: AssetImage("assets/img/history.jpg"),
+                  backgroundImage: (userImage != null && userImage!.isNotEmpty)
+                      ? NetworkImage(userImage!)
+                      : AssetImage("assets/img/user.png") as ImageProvider,
                 ),
               ),
             ),
           ),
-
           ListTile(
             leading: Icon(Icons.person),
-            title: Text("Your Profile"),
+            title: Text("Profile"),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>  ProfileCurrentUserScreen()),
+                    builder: (context) => ProfileCurrentUserScreen(
+                          user: userMap,
+                        )),
               );
             },
           ),
@@ -77,7 +129,6 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
-
           ListTile(
             leading: Icon(Icons.question_answer_outlined),
             title: Text("Community"),
@@ -110,15 +161,23 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
-
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text("Logout"),
-            onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => Loginscrean()),
-              );
+            onTap: () async {
+              await logout();
+
+              if (!mounted) return;
+
+            
+                if (!mounted) return; 
+                setState(() {
+                  Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Loginscrean()),
+                );
+                });
+            
             },
           ),
         ],

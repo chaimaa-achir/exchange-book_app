@@ -17,15 +17,20 @@
 }*/
 String timeAgo(DateTime date) {
   final duration = DateTime.now().difference(date);
+
   if (duration.inSeconds < 60) {
-      return "${duration.inSeconds} seconds ago";
-    } else if (duration.inMinutes < 60) {
-      return "${duration.inMinutes} minutes ago";
-    } else if (duration.inHours < 24) {
-      return "${duration.inHours} hours ago";
-    } else if (duration.inDays < 7) {
-      return "${duration.inDays} days ago";
-    } else {
-      return "${(duration.inDays / 7).floor()} weeks ago";
-    }
+    return "${duration.inSeconds} seconds ago";
+  } else if (duration.inMinutes < 60) {
+    return "${duration.inMinutes} minutes ago";
+  } else if (duration.inHours < 24) {
+    return "${duration.inHours} hours ago";
+  } else if (duration.inDays < 7) {
+    return "${duration.inDays} days ago";
+  } else if (duration.inDays < 14) {
+    return "1 week ago";
+  } else {
+    return "${(duration.inDays / 7).floor()} weeks ago";
   }
+}
+
+

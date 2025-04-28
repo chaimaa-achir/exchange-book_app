@@ -6,7 +6,6 @@ import 'package:mini_project/theApp_screans.dart/screans/add-forum.dart';
 import 'package:mini_project/theApp_screans.dart/screans/community.dart';
 import 'package:mini_project/theApp_screans.dart/screans/home.dart';
 import 'package:mini_project/theApp_screans.dart/screans/meesagePage.dart';
-import 'package:mini_project/theApp_screans.dart/screans/save.dart';
 
 class Navigationbar extends StatefulWidget {
     final int initialIndex;
@@ -46,7 +45,7 @@ void initState() {
           index: _intPage,
           children: [
             Homesrean(),
-            savePage(),
+            // savePage(),
             Container(),
             CommunityScreen(),
             MeesagePage(),

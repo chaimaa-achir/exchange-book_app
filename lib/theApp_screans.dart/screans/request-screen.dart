@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:mini_project/shared/costumeelevatedBottom.dart';
 import 'package:mini_project/theApp_screans.dart/models/book.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class RequestPage extends StatefulWidget {
   final Book book;
@@ -15,6 +16,10 @@ class RequestPage extends StatefulWidget {
 Book? selectedBookForExchange;
 
 class _RequestPageState extends State<RequestPage> {
+  bool _isNetworkUrl(String url) {
+    return url.startsWith('http') || url.startsWith('https');
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -41,12 +46,24 @@ class _RequestPageState extends State<RequestPage> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
-                      widget.book.bookimage,
-                      width: screenWidth * 0.15,
-                      height: screenHeight * 0.04,
-                      fit: BoxFit.cover,
-                    ),
+                    child: _isNetworkUrl(widget.book.bookimage)
+                        ? CachedNetworkImage(
+                            imageUrl: widget.book.bookimage,
+                            width: screenWidth * 0.15,
+                            height: screenHeight * 0.04,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => const Center(
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2)),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          )
+                        : Image.asset(
+                            widget.book.bookimage,
+                            width: screenWidth * 0.15,
+                            height: screenHeight * 0.04,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                   const SizedBox(width: 10),
                   Text(
@@ -63,11 +80,15 @@ class _RequestPageState extends State<RequestPage> {
               Row(
                 children: [
                   CircleAvatar(
-                    radius: 20,
-                    backgroundImage: AssetImage(widget.book.ownerimage),
+                    backgroundImage: widget.book.ownerimage != null
+                        ? NetworkImage(widget.book.ownerimage!)
+                        : AssetImage("assets/img/user.png")
+                            as ImageProvider,
                   ),
                   const SizedBox(width: 10),
-                  Text(widget.book.ownername),
+                  Text(
+                     widget.book.ownername
+                  ),
                 ],
               ),
               if (widget.book.bookstatus == "Lending") ...[
@@ -102,9 +123,9 @@ class _RequestPageState extends State<RequestPage> {
                 const SizedBox(height: 8),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.grey, // Button color
-                    padding: EdgeInsets.symmetric(horizontal: screenWidth*0.07), // Padding
+                    backgroundColor: Colors.grey, // Button color
+                    padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.07), // Padding
                     shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(25), // Rounded corners
@@ -126,15 +147,18 @@ class _RequestPageState extends State<RequestPage> {
                       });
                     }
                   },
-                  child: Text(selectedBookForExchange == null
-                      ? "Choose a book"
-                      : "Selected: ${selectedBookForExchange!.booktitel}",style: TextStyle(color: Colors.white),),
+                  child: Text(
+                    selectedBookForExchange == null
+                        ? "Choose a book"
+                        : "Selected: ${selectedBookForExchange!.booktitel}",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
               const SizedBox(
                 height: 20,
               ),
-    
+
               /// Message input
               FractionallySizedBox(
                 widthFactor: 1,
@@ -146,20 +170,23 @@ class _RequestPageState extends State<RequestPage> {
               const SizedBox(height: 8),
               TextField(
                 decoration: InputDecoration(
-                  hintText:
-                      "Send a friendly message to ${widget.book.ownername}",
+                  hintText: "Send a friendly message to chaimaa",
+                  //  "Send a friendly message to ${widget.book.ownername}",
                   hintStyle: const TextStyle(color: Colors.grey),
                   border: const UnderlineInputBorder(),
                 ),
                 maxLines: 2,
               ),
-    
+
               SizedBox(
                 height: screenHeight * 0.2,
               ),
-    
+
               /// Send button
-              myelvatedbottom(onPressed: () {}, child:Text("Send request", style: TextStyle(fontSize: 18,color: Colors.white))),
+              myelvatedbottom(
+                  onPressed: () {},
+                  child: Text("Send request",
+                      style: TextStyle(fontSize: 18, color: Colors.white))),
             ],
           ),
         ),
@@ -172,30 +199,39 @@ class SelectExchangeBookPage extends StatelessWidget {
   // هذا المفروض يكون من API: كتب المستخدم اللي حالتها Exchange
   final List<Book> userExchangeBooks = [
     Book(
-      booktitel: "My Book 1",
-      bookimage: "assets/img/history.jpg",
-      bookstatus: "Exchange",
-      ownername: "",
-      ownerimage: "",
-      distence: "",
-      postDate: DateTime(2025, 3, 25, 14, 30),
-      availability: true,
-      category: "",
-    ),
+        ownerid: 1,
+        bookid: 1,
+        booktitel: "My Book 1",
+        bookimage: "assets/img/history.jpg",
+        bookstatus: "Exchange",
+        ownername: '',
+        ownerimage: '',
+        // ownername: "",
+        // ownerimage: "",
+        distence: null,
+        postDate: DateTime(2025, 3, 25, 14, 30),
+        availability: true,
+        category: "",
+        author: ""),
     Book(
+      ownerid: 1,
+      bookid: 1,
       booktitel: "My Book 2",
       bookimage: "assets/img/history.jpg",
       bookstatus: "Exchange",
-      ownername: "",
-      ownerimage: "",
-      distence: "",
+      author: "",
+      ownername: '',
+      ownerimage: '',
+      // ownername: "",
+      // ownerimage: "",
+      distence: null,
       postDate: DateTime(2025, 3, 25, 14, 30),
       availability: true,
       category: "",
     ),
   ];
 
-   SelectExchangeBookPage({super.key});
+  SelectExchangeBookPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +242,8 @@ class SelectExchangeBookPage extends StatelessWidget {
         itemBuilder: (context, index) {
           final book = userExchangeBooks[index];
           return ListTile(
-            leading: Image.asset(book.bookimage, width:MediaQuery.of(context).size.width*0.15),
+            leading: Image.asset(book.bookimage,
+                width: MediaQuery.of(context).size.width * 0.15),
             title: Text(book.booktitel),
             onTap: () {
               Navigator.pop(context, book); // نرجع الكتاب المختار
