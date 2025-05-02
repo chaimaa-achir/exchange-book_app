@@ -1,12 +1,25 @@
-import 'package:mini_project/theApp_screans.dart/models/comunnity.dart';
-
-int countAllComments(List<Comment> comments) {
-  int count = 0;
-
-  for (var comment in comments) {
-    count++; // count the comment
-    count += countAllComments(comment.replies); // count replies recursively
-  }
-
-  return count;
+class Comment {
+  final String id;
+  final String userName;
+  final String userImageUrl;
+  final String text;
+  final DateTime timestamp;
+  final String? parent_id;
+  List<Comment> replies;
+  bool showReplies;
+  bool isReply;
+  int? replyCount; 
+  bool isLoadingReplies = false; 
+  Comment({
+    required this.id,
+    required this.userName,
+    required this.userImageUrl,
+    required this.text,
+    required this.timestamp,
+    this.parent_id,
+    this.replies = const [],
+    this.showReplies = false,
+    this.isReply = false,
+    this.replyCount = 0,
+  });
 }

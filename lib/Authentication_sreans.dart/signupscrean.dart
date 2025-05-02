@@ -7,42 +7,11 @@ import 'package:http/http.dart' as http;
 import 'package:mini_project/Authentication_sreans.dart/login.dart';
 import 'package:mini_project/Authentication_sreans.dart/termandconditions.dart';
 import 'package:mini_project/Authentication_sreans.dart/verifyCode.dart';
-import 'package:mini_project/shared/costumeelevatedBottom.dart'; // For making HTTP requests
-
-Future<Map<String, dynamic>> registerUser({
-  required String fullname,
-  required String username,
-  required String email,
-  required String password,
-}) async {
-  final url = Uri.parse('https://books-paradise.onrender.com/auth/register');
-
-  try {
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: json.encode({
-        "email": email,
-        "username": username,
-        "password": password,
-        "fullname": fullname,
-      }),
-    );
-
-    if (response.statusCode == 201) {
-      return {"success": true, "data": json.decode(response.body)};
-    } else {
-      final error = json.decode(response.body)['message'];
-      return {"success": false, "message": error ?? "Registration failed"};
-    }
-  } catch (e) {
-    return {"success": false, "message": "Error: $e"};
-  }
-}
-// For UI elements like ScaffoldMessenger
+import 'package:mini_project/shared/costumeelevatedBottom.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // For making HTTP requests
 
 class Signupscrean extends StatefulWidget {
-  const Signupscrean({super.key,required this.isAgree});
+  const Signupscrean({super.key, required this.isAgree});
   final bool isAgree;
 
   @override
@@ -61,12 +30,45 @@ class _SignupscreanState extends State<Signupscrean> {
   bool _isPasswordVisible2 = true;
   bool isChecked = false;
   String? email;
+
+  // For UI elements like ScaffoldMessengerqw
+  Future<Map<String, dynamic>> registerUser({
+    required String fullname,
+    required String username,
+    required String email,
+    required String password,
+  }) async {
+    final url = Uri.parse('https://books-paradise.onrender.com/auth/register');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          "email": email,
+          "username": username,
+          "password": password,
+          "fullname": fullname,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        return {"success": true, "data": json.decode(response.body)};
+      } else {
+        final error = json.decode(response.body)['message'];
+        return {"success": false, "message": error ?? "Registration failed"};
+      }
+    } catch (e) {
+      return {"success": false, "message": "Error: $e"};
+    }
+  }
+
   void _updateCheckboxState(bool value) {
     setState(() {
       isChecked = value;
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     if (widget.isAgree) {
@@ -226,10 +228,9 @@ class _SignupscreanState extends State<Signupscrean> {
                             _isPasswordVisible = !_isPasswordVisible;
                           });
                         },
-                        child:
-                            _isPasswordVisible
-                                ? Icon(Icons.visibility_off)
-                                : Icon(Icons.visibility),
+                        child: _isPasswordVisible
+                            ? Icon(Icons.visibility_off)
+                            : Icon(Icons.visibility),
                       ),
                     ),
                   ),
@@ -267,10 +268,9 @@ class _SignupscreanState extends State<Signupscrean> {
                             _isPasswordVisible2 = !_isPasswordVisible2;
                           });
                         },
-                        child:
-                            _isPasswordVisible2
-                                ? Icon(Icons.visibility_off)
-                                : Icon(Icons.visibility),
+                        child: _isPasswordVisible2
+                            ? Icon(Icons.visibility_off)
+                            : Icon(Icons.visibility),
                       ),
                     ),
                   ),
@@ -303,12 +303,12 @@ class _SignupscreanState extends State<Signupscrean> {
                     InkWell(
                       onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => TermsAndConditionsPage(
-                                      // onAgree: _updateCheckboxState,
-                                    )),
-                          );
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TermsAndConditionsPage(
+                                  // onAgree: _updateCheckboxState,
+                                  )),
+                        );
                       },
                       child: Text(
                         "Terms and Conditions ",
@@ -322,8 +322,72 @@ class _SignupscreanState extends State<Signupscrean> {
                 ),
                 SizedBox(height: screenHeight * 0.025),
 
+                // myelvatedbottom(
+                //  child:Text("Sign up" ,style: TextStyle(fontSize: 18,color: Colors.white)) ,
+                //   onPressed: () async {
+                //     final fullname = _fullnameController.text.trim();
+                //     final username = _usernameController.text.trim();
+                //     final emailUser = _emailController.text.trim();
+                //     final password = _passwordController.text.trim();
+                //     final confirmPassword =_confirmPasswordController.text.trim();
+
+                //     if (!isChecked) {
+                //       ScaffoldMessenger.of(context).showSnackBar(
+                //         SnackBar(
+                //           content: Text(
+                //             "Please agree to the Terms and Conditions",
+                //           ),
+                //         ),
+                //       );
+                //       return;
+                //     }
+
+                //     if (fullname.isEmpty ||
+                //         username.isEmpty ||
+                //         emailUser.isEmpty ||
+                //         password.isEmpty ||
+                //         confirmPassword.isEmpty) {
+                //       ScaffoldMessenger.of(context).showSnackBar(
+                //         SnackBar(content: Text("Please fill all fields")),
+                //       );
+                //       return;
+                //     }
+
+                //     if (password != confirmPassword) {
+                //       ScaffoldMessenger.of(context).showSnackBar(
+                //         SnackBar(content: Text("Passwords do not match")),
+                //       );
+                //       return;
+                //     }
+
+                //     final result = await registerUser(
+                //       fullname: fullname,
+                //       username: username,
+                //       email: emailUser,
+                //       password: password,
+
+                //     );
+
+                //     if (result['success']) {
+                //       if (!context.mounted) return;
+                //       Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder: (context) => Verifycode(email: emailUser),
+                //         ),
+                //       );
+                //     } else {
+                //        if(mounted){
+                //           ScaffoldMessenger.of(context).showSnackBar(
+                //         SnackBar(content: Text(result['message'])),
+                //       );
+                //        }
+                //     }
+                //   },
+                // ),
                 myelvatedbottom(
-                 child:Text("Sign up" ,style: TextStyle(fontSize: 18,color: Colors.white)) ,
+                  child: Text("Sign up",
+                      style: TextStyle(fontSize: 18, color: Colors.white)),
                   onPressed: () async {
                     final fullname = _fullnameController.text.trim();
                     final username = _usernameController.text.trim();
@@ -335,9 +399,8 @@ class _SignupscreanState extends State<Signupscrean> {
                     if (!isChecked) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
-                            "Please agree to the Terms and Conditions",
-                          ),
+                          content:
+                              Text("Please agree to the Terms and Conditions"),
                         ),
                       );
                       return;
@@ -366,10 +429,10 @@ class _SignupscreanState extends State<Signupscrean> {
                       username: username,
                       email: emailUser,
                       password: password,
-                      
                     );
 
                     if (result['success']) {
+                      // Registration successful, navigate to the VerifyCode screen
                       if (!context.mounted) return;
                       Navigator.push(
                         context,
@@ -378,14 +441,19 @@ class _SignupscreanState extends State<Signupscrean> {
                         ),
                       );
                     } else {
-                       if(mounted){
-                          ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(result['message'])),
-                      );
-                       }
+                      // Show error message in SnackBar first
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(result['message'])),
+                        );
+                        // Add a delay to ensure the user sees the error before navigating
+                        await Future.delayed(Duration(seconds: 2));
+                      }
+                      // Prevent navigation if the registration fails
                     }
                   },
                 ),
+
                 SizedBox(height: screenHeight * 0.037),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

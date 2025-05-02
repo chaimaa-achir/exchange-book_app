@@ -3,6 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:mini_project/helpers/validator.dart';
 import 'package:mini_project/shared/costumeelevatedBottom.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -17,8 +20,42 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   final TextEditingController _newpassword = TextEditingController();
   final TextEditingController _matchpassword = TextEditingController();
   bool _isPasswordVisible = true;
-    bool _isPasswordVisible2 = true;
-      bool _isPasswordVisible3 = true;
+  bool _isPasswordVisible2 = true;
+  bool _isPasswordVisible3 = true;
+  bool isLoading = false;
+  static Future<Map<String, dynamic>> changepass(
+      String oldpass, String newpass) async {
+    try {
+      final url = 'https://books-paradise.onrender.com/auth/change-pass';
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      final headers = {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      };
+
+      final response = await http.patch(Uri.parse(url),
+          headers: headers,
+          body: jsonEncode({'oldpass': oldpass, 'newpass': newpass}));
+      final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return {
+          'success': true,
+          'message': responseData['message'] ?? 'password updated.',
+        };
+      } else {
+        return {
+          'success': false,
+          'message': responseData['message'] ?? 'Failed to update password.',
+        };
+      }
+    } catch (e) {
+      print('Exception in changing password: $e');
+      throw Exception('Error changing password: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
@@ -53,7 +90,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 ),
                 SizedBox(
                   width: screenWidth * 0.9,
-                  
                   child: TextFormField(
                     controller: _currentPassword,
                     obscureText: _isPasswordVisible,
@@ -89,7 +125,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 ),
                 SizedBox(
                   width: screenWidth * 0.9,
-                
                   child: TextFormField(
                     controller: _newpassword,
                     obscureText: _isPasswordVisible2,
@@ -126,7 +161,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 ),
                 SizedBox(
                   width: screenWidth * 0.9,
-                  
                   child: TextFormField(
                     controller: _matchpassword,
                     obscureText: _isPasswordVisible3,
@@ -157,11 +191,41 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   height: screenHeight * 0.1,
                 ),
                 myelvatedbottom(
-                  onPressed: () {
-                    if (keyFromstate.currentState!.validate()) {}
-                    
-                  },
-                  child:Text("Change Password", style: TextStyle(fontSize: 18,color: Colors.white)),
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          final oldpass = _currentPassword.text;
+                          final newpass = _newpassword.text;
+
+                          if (keyFromstate.currentState!.validate()) {
+                            setState(() {
+                              isLoading = true;
+                            });
+
+                            final response = await changepass(oldpass, newpass);
+
+                            setState(() {
+                              isLoading = false;
+                            });
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(response['message'])),
+                            );
+                          }
+                        },
+                  child: isLoading
+                      ? SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          "Change Password",
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
                 ),
               ],
             ),

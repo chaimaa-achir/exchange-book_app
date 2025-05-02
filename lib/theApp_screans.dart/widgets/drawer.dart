@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:mini_project/Authentication_sreans.dart/login.dart';
 import 'package:mini_project/theApp_screans.dart/navigationbottombar.dart';
 import 'package:mini_project/theApp_screans.dart/screans/change-pass.dart';
@@ -10,6 +10,39 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<void> logout() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.clear();
+}
+
+Future<String> getToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('token') ?? '';
+}
+
+Future<Map<String, dynamic>> fetchProfile() async {
+  String token = await getToken();
+  final url = Uri.parse('https://books-paradise.onrender.com/profile/user-profile');
+  
+  try {
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json'
+      },
+    );
+    
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return {
+        'profile_pic': data['profile_pic'],
+      };
+    } else {
+      print('Failed to load profile, code: ${response.statusCode}');
+      return {};
+    }
+  } catch (e) {
+    print('Connection error: $e');
+    return {};
+  }
 }
 
 class CustomDrawer extends StatefulWidget {
@@ -34,19 +67,20 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   Future<void> loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    String? userJson =
-        prefs.getString('user'); // جلب بيانات المستخدم المخزنة كـ JSON
+    String? userJson = prefs.getString('user'); 
 
     if (userJson != null) {
-      userMap = jsonDecode(userJson); // فك تشفير البيانات إلى ماب
+      userMap = jsonDecode(userJson);
+      
+      Map<String, dynamic> profileData = await fetchProfile();
+      
       setState(() {
         username = userMap['username'] ?? "Guest User";
         email = userMap['email'] ?? "No Email";
-        userImage = userMap['profile_picture'];
+        userImage = profileData['profile_pic'] ?? userMap['profile_picture'];
         isLoading = false;
       });
     } else {
-      // لو مفيش بيانات محفوظة، لو مستخدم جديد أو تم مسح البيانات
       setState(() {
         username = "Guest User";
         email = "No Email";
@@ -59,7 +93,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return Drawer(
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
     return Drawer(
       child: Column(
@@ -168,16 +204,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
               await logout();
 
               if (!mounted) return;
-
-            
-                if (!mounted) return; 
-                setState(() {
-                  Navigator.pushReplacement(
+              
+              setState(() {
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => Loginscrean()),
                 );
-                });
-            
+              });
             },
           ),
         ],

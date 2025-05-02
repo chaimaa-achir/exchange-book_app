@@ -99,13 +99,17 @@ class _BookDetailsState extends State<BookDetails> {
                     style: TextStyle(fontSize: 12),
                   ),
                   IconButton(
-                      onPressed: () {
-                        setState(() {
-                          savedBooksProvider.toggleSaveBook(widget.book);
-                        });
-                      },
-                      icon: Icon(
-                          isSaved ? Icons.bookmark : Icons.bookmark_outline)),
+                    icon: Icon(
+                      savedBooksProvider.isSaved(widget.book)
+                          ? Icons.bookmark
+                          : Icons.bookmark_border,
+                    ),
+                    onPressed: () {
+                      if (!savedBooksProvider.isSaved(widget.book)) {
+                        savedBooksProvider.saveBook(widget.book);
+                      }
+                    },
+                  ),
                   Text(
                     "Save",
                     style: TextStyle(fontSize: 12),

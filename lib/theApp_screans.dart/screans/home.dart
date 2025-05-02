@@ -22,11 +22,11 @@ class Homesrean extends StatefulWidget {
 }
 
 class _HomesreanState extends State<Homesrean> {
-   String? fullName;
+  String? fullName;
   List<String> allItems = [];
   String? currentPlaceName;
   late Future<List<Book>> mostRequestedBooksFuture;
-late Future<List<Book>> booksNearYouFuture;
+  late Future<List<Book>> booksNearYouFuture;
 
   Map recivedata = {};
   late SearchController _searchController = SearchController();
@@ -35,9 +35,9 @@ late Future<List<Book>> booksNearYouFuture;
     super.initState();
     //fetchUsers();
     loadCurrentUserLocationName();
-     mostRequestedBooksFuture = fetchMostRequestedBooks();
-  booksNearYouFuture = fetchBooksNearYou();
-  loadUserName();
+    mostRequestedBooksFuture = fetchMostRequestedBooks();
+    booksNearYouFuture = fetchBooksNearYou();
+    loadUserName();
 
     _searchController = SearchController();
   }
@@ -47,6 +47,7 @@ late Future<List<Book>> booksNearYouFuture;
     _searchController.dispose();
     super.dispose();
   }
+
   // Load the full name from SharedPreferences
   void loadUserName() async {
     final prefs = await SharedPreferences.getInstance();
@@ -55,85 +56,84 @@ late Future<List<Book>> booksNearYouFuture;
       fullName = name;
     });
   }
+
   Future<List<Book>> fetchMostRequestedBooks() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    
-    
-    final token = prefs.getString('token');
+    try {
+      final prefs = await SharedPreferences.getInstance();
 
-    
-    final latitude = prefs.getDouble('latitude');
-    final longitude = prefs.getDouble('longitude');
+      final token = prefs.getString('token');
 
-    
-    if (token == null || latitude == null || longitude == null) {
-      print('⚠️ Missing token or location data.');
+      final latitude = prefs.getDouble('latitude');
+      final longitude = prefs.getDouble('longitude');
+
+      if (token == null || latitude == null || longitude == null) {
+        print('⚠️ Missing token or location data.');
+        return [];
+      }
+
+      // تجهيز الرابط
+      final url = Uri.parse(
+          'https://books-paradise.onrender.com/home/most-requested?userLat=$latitude&userLon=$longitude');
+
+      // إرسال الطلب مع التوكين داخل الهيدر
+      var response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token', // هنا التوكين
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print('Data received (Most Requested): $data');
+        return (data as List).map((e) => Book.fromJson(e)).toList();
+      } else {
+        print('⚠️ Failed to fetch: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching most requested books: $e');
       return [];
     }
-
-    // تجهيز الرابط
-    final url = Uri.parse('https://books-paradise.onrender.com/home/most-requested?userLat=$latitude&userLon=$longitude');
-
-    // إرسال الطلب مع التوكين داخل الهيدر
-    var response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token', // هنا التوكين
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      print('Data received (Most Requested): $data');
-      return (data as List).map((e) => Book.fromJson(e)).toList();
-    } else {
-      print('⚠️ Failed to fetch: ${response.statusCode}');
-      return [];
-    }
-  } catch (e) {
-    print('Error fetching most requested books: $e');
-    return [];
   }
-}
 
+  Future<List<Book>> fetchBooksNearYou() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      final latitude = prefs.getDouble('latitude');
+      final longitude = prefs.getDouble('longitude');
 
-Future<List<Book>> fetchBooksNearYou() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-    final latitude = prefs.getDouble('latitude');
-    final longitude = prefs.getDouble('longitude');
+      if (token == null || latitude == null || longitude == null) {
+        print('⚠️ Missing token or location data.');
+        return [];
+      }
 
-    if (token == null || latitude == null || longitude == null) {
-      print('⚠️ Missing token or location data.');
+      final url = Uri.parse(
+          'https://books-paradise.onrender.com/home/near-you?userLat=$latitude&userLon=$longitude');
+
+      var response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+      print("body json off book near you$response.body");
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print('Data received (Most Requested): $data');
+        return (data as List).map((e) => Book.fromJson(e)).toList();
+      } else {
+        print('⚠️ Error fetching books near you: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching books near you: $e');
       return [];
     }
-
-    final url = Uri.parse('https://books-paradise.onrender.com/home/near-you?userLat=$latitude&userLon=$longitude');
-
-    var response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      print('Data received (Most Requested): $data');
-      return (data as List).map((e) => Book.fromJson(e)).toList();
-    } else {
-      print('⚠️ Error fetching books near you: ${response.statusCode}');
-      return [];
-    }
-  } catch (e) {
-    print('Error fetching books near you: $e');
-    return [];
   }
-}
 
   void loadCurrentUserLocationName() async {
     final LatLng? savedLocation = await LocationStorage.getSavedLocation();
@@ -180,6 +180,12 @@ Future<List<Book>> fetchBooksNearYou() async {
 }
 
 }*/
+  Future<void> _refreshBooks() async {
+  setState(() {
+    mostRequestedBooksFuture = fetchMostRequestedBooks();
+    booksNearYouFuture = fetchBooksNearYou();
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +220,7 @@ Future<List<Book>> fetchBooksNearYou() async {
             FractionallySizedBox(
               widthFactor: 1.050,
               child: Text(
-                  fullName != null ? "Welcome, $fullName" : "Loading...",
+                fullName != null ? "Welcome, $fullName" : "Loading...",
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 24,
@@ -258,121 +264,124 @@ Future<List<Book>> fetchBooksNearYou() async {
           ],
         ),
       ),
-      body: SizedBox(
-        height: double.infinity,
-        width: double.infinity,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: screenHeight * 0.018,
-              ),
-              CustomSearchBar(
-                searchController: _searchController,
-                allItems: allItems,
-              ),
-              SizedBox(
-                height: screenHeight * 0.02,
-              ),
-              FractionallySizedBox(
-                  widthFactor: 0.9,
-                  child: const Text(
-                    "Categories",
-                    style: TextStyle(
-                        color: Color(0xFF1A1A1A),
-                        fontSize: 17,
-                        fontWeight: FontWeight.w400),
-                  )),
-              SizedBox(
-                height: screenHeight * 0.01,
-              ),
-              // Catigorydisplay(),
-              SizedBox(
-                height: screenHeight * 0.02,
-              ),
-              FractionallySizedBox(
-                widthFactor: 0.9,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Most requested books",
+      body: RefreshIndicator(
+        onRefresh:  _refreshBooks,
+        child: SizedBox(
+          height: double.infinity,
+          width: double.infinity,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: screenHeight * 0.018,
+                ),
+                CustomSearchBar(
+                  searchController: _searchController,
+                  allItems: allItems,
+                ),
+                SizedBox(
+                  height: screenHeight * 0.02,
+                ),
+                FractionallySizedBox(
+                    widthFactor: 0.9,
+                    child: const Text(
+                      "Categories",
                       style: TextStyle(
                           color: Color(0xFF1A1A1A),
-                          fontSize: 16,
+                          fontSize: 17,
                           fontWeight: FontWeight.w400),
-                    ),
-                    InkWell(
-                      onTap: () {},
-                      child: Row(
-                        children: [
-                          const Text(
-                            "All",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          Icon(Icons.chevron_right),
-                        ],
+                    )),
+                SizedBox(
+                  height: screenHeight * 0.01,
+                ),
+                // Catigorydisplay(),
+                SizedBox(
+                  height: screenHeight * 0.02,
+                ),
+                FractionallySizedBox(
+                  widthFactor: 0.9,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Most requested books",
+                        style: TextStyle(
+                            color: Color(0xFF1A1A1A),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400),
                       ),
-                    )
-                  ],
+                      InkWell(
+                        onTap: () {},
+                        child: Row(
+                          children: [
+                            const Text(
+                              "All",
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            Icon(Icons.chevron_right),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
 
-              // Bookdispalyhome(books: mostRequestedBooks),
-              FutureBuilder<List<Book>>(
-                future: mostRequestedBooksFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error loading books'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No books found'));
-                  } else {
-                    return Bookdispalyhome(books: snapshot.data!);
-                  }
-                },
-              ),
+                // Bookdispalyhome(books: mostRequestedBooks),
+                FutureBuilder<List<Book>>(
+                  future: mostRequestedBooksFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error loading books'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('No books found'));
+                    } else {
+                      return Bookdispalyhome(books: snapshot.data!);
+                    }
+                  },
+                ),
 
-              FractionallySizedBox(
-                widthFactor: 0.9,
-                child: const Text(
-                  "Top users",
-                  style: TextStyle(
-                      color: Color(0xFF1A1A1A),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400),
+                FractionallySizedBox(
+                  widthFactor: 0.9,
+                  child: const Text(
+                    "Top users",
+                    style: TextStyle(
+                        color: Color(0xFF1A1A1A),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400),
+                  ),
                 ),
-              ),
-              Userdisplayhome(),
-              FractionallySizedBox(
-                widthFactor: 0.9,
-                child: const Text(
-                  "Books near you",
-                  style: TextStyle(
-                      color: Color(0xFF1A1A1A),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400),
+                Userdisplayhome(),
+                FractionallySizedBox(
+                  widthFactor: 0.9,
+                  child: const Text(
+                    "Books near you",
+                    style: TextStyle(
+                        color: Color(0xFF1A1A1A),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400),
+                  ),
                 ),
-              ),
-              FutureBuilder<List<Book>>(
-                future: booksNearYouFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error loading books'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No books found near you'));
-                  } else {
-                    return Bookdispalyhome(books: snapshot.data!);
-                  }
-                },
-              ),
-              SizedBox(
-              height: screenHeight * 0.1,
+                FutureBuilder<List<Book>>(
+                  future: booksNearYouFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error loading books'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('No books found near you'));
+                    } else {
+                      return Bookdispalyhome(books: snapshot.data!);
+                    }
+                  },
+                ),
+                SizedBox(
+                  height: screenHeight * 0.1,
+                ),
+              ],
             ),
-            ],
           ),
         ),
       ),

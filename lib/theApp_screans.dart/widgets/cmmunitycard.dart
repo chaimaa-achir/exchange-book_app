@@ -1,44 +1,115 @@
 import 'package:flutter/material.dart';
-import 'package:mini_project/helpers/comment_utils.dart';
+import 'package:mini_project/helpers/communityapi.dart';
 import 'package:mini_project/helpers/time_utils.dart';
+
 import 'package:mini_project/theApp_screans.dart/models/comunnity.dart';
 import 'package:mini_project/theApp_screans.dart/screans/postdetails.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/report_dailog.dart';
-
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class Communitycard extends StatefulWidget {
   final Community community;
-
   const Communitycard({
     super.key,
     required this.community,
   });
+
   @override
   State<Communitycard> createState() => _CommunitycardState();
 }
 
+  Future<String?> getUsername() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  final userJson = prefs.getString('user');
+  if (userJson != null) {
+    final userMap = jsonDecode(userJson);
+    return userMap['username'];
+  }
+  return null;
+}
 class _CommunitycardState extends State<Communitycard> {
+  String? currentuser;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch username when widget initializes
+    _loadUsername();
+  }
+
+  // Method to load username asynchronously
+  Future<void> _loadUsername() async {
+    final username = await getUsername();
+    if (mounted) {
+      setState(() {
+        currentuser = username;
+      });
+    }
+  }
   double getTextHeight(String text, TextStyle style, double width) {
     TextSpan textSpan = TextSpan(text: text, style: style);
+
     TextPainter textPainter = TextPainter(
       text: textSpan,
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
       maxLines: 7,
     )..layout(maxWidth: width);
-
     return textPainter.size.height;
   }
+Future<void> _toggleLike() async {
+  try {
+    setState(() {
+     widget.community.isLiked = !widget.community.isLiked;
+      if ((widget.community.isLiked &&!widget.community.is_liked)||(!widget.community.isLiked && widget.community.is_liked) ) {
+        widget.community.likes++;
+      } else {
+        widget.community.likes--;
+      }
+      
+    });
+    
+    final response = await ApiService.toggleLike(widget.community.postId);
+    
+    if (response['success'] != true) {
+      setState(() {
+       widget.community.isLiked = !widget.community.isLiked;
+      if ((!widget.community.isLiked &&!widget.community.is_liked)||(widget.community.isLiked && widget.community.is_liked) ){
+        widget.community.likes++;
+      } else {
+        widget.community.likes--;
+      }
+      });
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(response['message'] ?? 'Failed to update like'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  } catch (e) {
+
+    setState(() {
+      widget.community.isLiked=widget.community.isLiked;
+      widget.community.likes=widget.community.likes;
+      });
+    
+    print('Error toggling like: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error updating like'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+}
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)  {
     final screenHeight = MediaQuery.of(context).size.height;
-      final screenWidth = MediaQuery.of(context).size.width;
-    double textHeight = getTextHeight(
-        widget.community.Forum, // here this will change from data base
-        TextStyle(fontSize: 16),
-        screenWidth * 0.8);
+    final screenWidth = MediaQuery.of(context).size.width;
+   
     return Padding(
       padding: const EdgeInsets.all(1.0),
       child: Column(
@@ -51,167 +122,168 @@ class _CommunitycardState extends State<Communitycard> {
             child: Padding(
               padding: const EdgeInsets.all(0.02),
               child: GestureDetector(
-                onTap: () async{
+                onTap: () async {
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            Postdetails(community: widget.community)),
+                      
+
+                      builder: (context) => Postdetails(
+                      postId: widget.community.postId,isLiked: widget.community.is_liked,
+                      ),
+                    ),
                   );
-                  setState(() {});
                 },
                 child: Container(
-                  height: widget.community.imagesCommunity.isEmpty
-                      ? textHeight + screenHeight * 0.3
-                      : screenHeight * 0.45,
                   width: screenWidth * 0.9,
                   decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(255, 110, 109, 109),
-                          offset: Offset(5, 7),
-                          blurRadius: 10,
-                        ),
-                      ]),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          IconButton(
-                              onPressed: () {
-                                showReportOptions(context, (selectedReason) {
-                                // print("the reason:$selectedReason");
-                  });
-                              },
-                              icon: Icon(
-                                Icons.flag_outlined,
-                                size: 30,
-                              )),
-                        ],
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: Offset(0, 3),
                       ),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: screenWidth * 0.05,
-                          ),
-                          CircleAvatar(
-                            radius: 23,
-                            backgroundImage: AssetImage(widget.community
-                                .userimage), // i get it from data base
-                          ),
-                          SizedBox(
-                            width: screenWidth * 0.02,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.community.username,
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              Row(
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundImage: widget.community.userimage.startsWith('http')
+                                  ? NetworkImage(widget.community.userimage)
+                                  : const AssetImage('assets/img/user.png') as ImageProvider,
+                              radius: 20,
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(
-                                    Icons.access_time,
-                                    color: Colors.grey,
-                                    size: 20,
+                                  Text(
+                                    widget.community.username,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                   Text(
-                                    timeAgo(widget.community.Cpostdate),
+                                    timeAgo(widget.community.createdAt),
                                     style: TextStyle(
-                                        fontSize: 13, color: Colors.grey),
-                                  ), // i will worck on this
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                 ],
                               ),
-                            ],
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: screenHeight * 0.02,
-                      ),
-                      SizedBox(
-                        width: screenWidth * 0.8,
-                        child: widget.community.imagesCommunity.isNotEmpty
-                            ? Text(
-                                widget.community.Forum,
-                                textAlign: TextAlign.center,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 16),
-                              )
-                            : Text(
-                                widget.community.Forum,
-                                textAlign: TextAlign.start,
-                                maxLines: 7,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 16),
-                              ),
-                      ),
-                      if (widget.community.imagesCommunity.isNotEmpty) ...[
-                        SizedBox(
-                            height: screenHeight * 0.02),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 8.0, right: 8, top: 8),
-                          child:
-                              buildPostImages(widget.community.imagesCommunity),
-                        ),
-                      ],
-                      Expanded(
-                        child: Container(),
-                      ),
-                      Container(
-                        height: screenHeight * 0.06,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(117, 158, 158, 158),
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(20),
-                              bottomRight: Radius.circular(20)),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 15),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Icon(Icons.question_answer_outlined),
-
-                              Text(
-                                "${countAllComments(widget.community.comments)} comments",
-                              
-                              ), // number changes
-                              SizedBox(
-                                width: screenWidth * 0.02,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    widget.community.isLiked =
-                                        !widget.community.isLiked;
-                                    if (widget.community.isLiked) {
-                                      widget.community.numberlikes++;
-                                    } else {
-                                      widget.community.numberlikes--;
-                                    }
-                                  });
-                                },
-                                child: Icon(
-                                  widget.community.isLiked
-                                      ? Icons.favorite
-                                      : Icons
-                                          .favorite_border, // Change the icon based on like state
-                                  color: widget.community.isLiked ? Colors.red : Colors.black,
+                            ),
+                            PopupMenuButton<String>(
+                              onSelected: (value) async {
+                               if (value == 'delete') {
+                                  
+                                   showDeleteConfirmationDialog(context,
+                                     widget.community.postId
+                                  );
+                                }
+                                else if(value=='report'){
+                                     showReportOptions(context,(reason) {
+                                            _reportPost(context,widget.community.postId, reason);
+                                    });
+                                }
+                              },
+                              itemBuilder: (BuildContext context) => [
+                                PopupMenuItem<String>(
+                                  value: 'report',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.flag, color: Colors.red),
+                                      SizedBox(width: 8),
+                                      Text('Report'),
+                                  
+                                    ],
+                                    
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                "${widget.community.numberlikes} likes",
+                               
+                                if(currentuser==widget.community.username)
+                                 PopupMenuItem<String>(
+                                  value: 'delete',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.delete, color: Colors.red),
+                                      SizedBox(width: 8),
+                                      Text('Delete'),
+                                  
+                                    ],
+                                    
+                                  ),
+                                ),
                                 
-                              ), // number changes
-                            ],
-                          ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Post content
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: Text(
+                          widget.community.content,
+                          style: TextStyle(fontSize: 16),
+                          maxLines: 7,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      if (widget.community.mediaUrls.isNotEmpty)
+                        _buildMediaContent(widget.community.mediaUrls),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                ((!widget.community.isLiked && widget.community.is_liked)||(widget.community.isLiked && !widget.community.is_liked)) ? Icons.favorite : Icons.favorite_border,
+                                color: ((!widget.community.isLiked && widget.community.is_liked)||(widget.community.isLiked && !widget.community.is_liked)) ? Colors.red : Colors.grey,
+                              ),
+                              onPressed: _toggleLike,
+                            ),
+                            Text(
+                              '${widget.community.likes}',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            SizedBox(width: 16),
+                            IconButton(
+                              icon: Icon(Icons.comment_outlined, color: Colors.grey),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Postdetails(
+                                    postId: widget.community.postId,isLiked:widget.community.is_liked
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            Text(
+                              '${widget.community.commentsCount}',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            Spacer(),
+                            IconButton(
+                              icon: Icon(Icons.share_outlined, color: Colors.grey),
+                              onPressed: () {
+                    
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -225,124 +297,152 @@ class _CommunitycardState extends State<Communitycard> {
     );
   }
 
-  Widget buildPostImages(List<String> images) {
-    final screenHeight = MediaQuery.of(context).size.height;
-      final screenWidth = MediaQuery.of(context).size.width;
-    int count = images.length;
-    if (count == 1) {
-      return Column(
-        children: [
-          ClipRRect(
-            child: Image.asset(
-              images[0],
-              fit: BoxFit.cover,
-              width: screenWidth * 0.8,
-              height: screenHeight * 0.18,
+Widget _buildMediaContent(List<String> mediaUrls) {
+  if (mediaUrls.isEmpty) return SizedBox.shrink();
+  
+  if (mediaUrls.length == 1) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          mediaUrls[0],
+          width: double.infinity,
+          height: 200,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+            Container(
+              height: 200,
+              color: Colors.grey[300],
+              child: Center(
+                child: Icon(Icons.broken_image, size: 50, color: Colors.grey[500]),
+              ),
             ),
-          ),
-        ],
-      );
-    } else if (count == 2) {
-      return Column(
-        children: [
-          Row(
-            children: images
-                .take(2)
-                .map((img) => Expanded(child: imageTile(img)))
-                .toList(),
-          ),
-        ],
-      );
-    }
-    return SizedBox(
-      width: screenWidth * 0.8,
-      height: screenHeight * 0.18,
-      child: Row(
-        children: [
-          // Left big image
-          Container(
-            width: screenWidth * 0.4,
-            height: double.infinity,
-            padding:  EdgeInsets.symmetric(horizontal: screenWidth*0.003),
-            child: imageTile2(images[0]),
-          ),
+        ),
+      ),
+    );
+  }
 
-          // Right 2 stacked images
-          Expanded(
-            child: Column(
-              children: [
-                // First top right image
-                Expanded(
-                  child: Padding(
-                    padding:  EdgeInsets.symmetric(vertical:screenHeight *0.001 ),
-                    child: imageTile2(images[1]),
-                  ),
-                ),
-
-                // Second bottom right image inside a Stack
-                if (count > 2)
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        // The image behind
-                        Padding(
-                          padding:  EdgeInsets.symmetric(vertical: screenHeight *0.001),
-                          child: imageTile2(images[2]),
-                        ),
-                        // The "+more" overlay
-                        if (count > 3)
+  else {
+    int currentPage = 0;
+    
+    return StatefulBuilder(
+      builder: (context, setInnerState) {
+        return Column(
+          children: [
+            Container(
+              height: 200,
+              child: PageView.builder(
+                itemCount: mediaUrls.length,
+                controller: PageController(),
+                onPageChanged: (int page) {
+                  setInnerState(() {
+                    currentPage = page;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        mediaUrls[index],
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
                           Container(
-                            color: Colors.black54,
-                            alignment: Alignment.center,
-                            child: Text(
-                              "+${count - 3}",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            color: Colors.grey[300],
+                            child: Center(
+                              child: Icon(Icons.broken_image, size: 50, color: Colors.grey[500]),
                             ),
                           ),
-                      ],
+                      ),
                     ),
-                  ),
-              ],
+                  );
+                },
+              ),
             ),
+
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                mediaUrls.length,
+                (index) => AnimatedContainer(
+                  duration: Duration(milliseconds: 300),
+                  margin: EdgeInsets.symmetric(horizontal: 4),
+                  height: 8,
+                  width: 8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: currentPage == index ? const Color.fromARGB(255, 205, 33, 243) : Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      }
+    );
+  }
+}}
+void showDeleteConfirmationDialog(BuildContext context, String postId) {
+  showDialog(
+    context: context,
+    builder: (BuildContext dialogContext) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text("Confirm Delete"),
+        content: Text("Do you want to delete this post?"),
+        actions: [
+          TextButton(
+            child: Text("Cancel"),
+            onPressed: () {
+              Navigator.of(dialogContext).pop(); // Close dialog
+            },
+          ),
+          TextButton(
+            child: Text("OK", style: TextStyle(color: Colors.red)),
+            onPressed: () async {
+              Navigator.of(dialogContext).pop(); // Close dialog first
+              await deletepost(context, postId); // Call your delete function
+            },
           ),
         ],
-      ),
-    );
-  }
+      );
+    },
+  );
+}
 
-  Widget imageTile(String imgPath) {
-    final screenHeight = MediaQuery.of(context).size.height;
-      final screenWidth = MediaQuery.of(context).size.width;
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal:screenWidth*0.003),
-      child: ClipRRect(
-        child: Image.asset(
-          imgPath,
-          fit: BoxFit.cover,
-          width: screenWidth * 0.8,
-          height: screenHeight * 0.18,
-        ),
-      ),
-    );
-  }
+Future<void> deletepost(BuildContext context,String postId) async {
 
-  Widget imageTile2(String imgPath) {
-    final screenHeight = MediaQuery.of(context).size.height;
-      final screenWidth = MediaQuery.of(context).size.width;
-    return Padding(
-      padding:  EdgeInsets.symmetric(horizontal:screenWidth*0.003),
-      child: ClipRRect(
-        child: Image.asset(
-          imgPath,
-          fit: BoxFit.cover,
-          width: screenWidth * 0.8,
-          height: screenHeight * 0.14,
-        ),
-      ),
+  try{
+    final response =await ApiService.deletepost(
+      postId
     );
-  }
+    if(response['success']==true){
+       ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response['message'])),);
+    }
+  }catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete post: $e')),
+      );
+    }
+}
+Future<void> _reportPost(BuildContext context,String postId,String reason) async {
+
+  try{
+    final response =await ApiService.reportitem(
+      postId,reason,'post'
+    );
+    if(response['success']==true){
+       ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response['message'])),);
+    }
+  }catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete post: $e')),
+      );
+    }
 }

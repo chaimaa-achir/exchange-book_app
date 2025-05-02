@@ -21,11 +21,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      // Wrap with MultiProvider for state management
+      
       providers: [
         ChangeNotifierProvider(
             create: (context) =>
-                SavedBooksProvider()), // Register SavedBooksProvider
+                SavedBooksProvider()), 
       ],
 
       child: MaterialApp(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 void showReportOptions(BuildContext context,Function(String reason) onSelected) {
   final List<String> reportResons = [
+    'Scam',
     'Sharing personal data',
     'Advertising / selling',
     'Offering / requesting item',

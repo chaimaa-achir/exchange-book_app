@@ -1,13 +1,14 @@
 // ignore_for_file: unnecessary_null_comparison, file_names
 
+import 'dart:convert';
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mini_project/shared/costumeelevatedBottom.dart';
 import 'package:mini_project/theApp_screans.dart/widgets/image-placeholder.dart';
-
-
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddForumScreen extends StatefulWidget {
   const AddForumScreen({super.key});
@@ -21,36 +22,121 @@ File? forumImage;
 
 class _AddForumScreenState extends State<AddForumScreen> {
   List<File> images = [];
+  String username = "";
+  String? userImage;
+  late Map<String, dynamic> userMap;
 
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
 
+  Future<void> loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? userJson =
+        prefs.getString('user'); // جلب بيانات المستخدم المخزنة كـ JSON
 
+    if (userJson != null) {
+      userMap = jsonDecode(userJson); // فك تشفير البيانات إلى ماب
+      setState(() {
+        username = userMap['username'] ?? "Guest User";
+        userImage = userMap['profile_picture'];
+      });
+    } else {
+      // لو مفيش بيانات محفوظة، لو مستخدم جديد أو تم مسح البيانات
+      setState(() {
+        username = "Guest User";
+        userImage = null;
+      });
+    }
+  }
 
-Future<void> _pickImages() async {
+  Future<void> _pickImages() async {
     final pickedFiles = await ImagePicker().pickMultiImage();
     if (pickedFiles != null) {
       setState(() {
         images.addAll(pickedFiles.map((file) => File(file.path)));
       });
     }
-  } 
+  }
+
   void _removeImage(int index) {
     setState(() {
       images.removeAt(index);
     });
   }
 
-  void _submitForm() {
-    if (_decriptioncontroller.text.isEmpty) {
+  Future<void> submitPost(BuildContext context) async {
+    final String content = _decriptioncontroller.text.trim();
+
+    if (content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("To sumbit write a description"),
-        ),
+        const SnackBar(content: Text("To submit, write a description")),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Post submitted successfully!"),
-        backgroundColor: Colors.green,
-      ));
+      return;
+    }
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token == null) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Token not found")),
+        );
+        return;
+      }
+
+      final uri = Uri.parse(
+          "https://books-paradise.onrender.com/community/create-post");
+      final request = http.MultipartRequest('POST', uri);
+      request.headers['Authorization'] = 'Bearer $token';
+
+      request.fields['content'] = content;
+
+      for (var image in images) {
+        request.files.add(
+          await http.MultipartFile.fromPath('images', image.path),
+        );
+      }
+
+      final response = await request.send();
+      print("Request sent. Waiting for response...");
+      final respStr =
+          await response.stream.bytesToString(); // اقرأ مرة واحدة فقط
+      print("Response received: $respStr");
+      Navigator.pop(context);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("تم نشر المنشور بنجاح!"),
+              backgroundColor: Colors.green),
+        );
+        _decriptioncontroller.clear();
+        setState(() {
+          images.clear();
+        });
+      } else {
+        print('خطأ من السيرفر: $respStr');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text("فشل في إرسال المنشور (رمز: ${response.statusCode})")),
+        );
+      }
+    } catch (e) {
+      print("Exception: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("An error occurred: $e")),
+      );
     }
   }
 
@@ -75,50 +161,49 @@ Future<void> _pickImages() async {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SizedBox(
-                height:  screenHeight * 0.02,
+                height: screenHeight * 0.02,
               ),
               Row(
                 children: [
                   SizedBox(
-                    width:  screenWidth * 0.04,
+                    width: screenWidth * 0.04,
                   ),
                   CircleAvatar(
-                    radius: 21,
-                    backgroundImage: AssetImage(
-                        "assets/img/history.jpg"), // i get it from data base
+                    backgroundImage: (userImage != null &&
+                            userImage!.isNotEmpty)
+                        ? NetworkImage(userImage!)
+                        : AssetImage("assets/img/user.png") as ImageProvider,
                   ),
                   SizedBox(
-                    width:  screenWidth * 0.04,
+                    width: screenWidth * 0.04,
                   ),
                   Text(
-                    " username",
-                    style:
-                        TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                  ), // iget it from data base
+                    username,
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
               Divider(),
               SizedBox(
-                height:  screenHeight * 0.02,
+                height: screenHeight * 0.02,
               ),
               Padding(
                 padding: EdgeInsets.only(
-                      left:  screenWidth * 0.075,
-                      top:  screenWidth * 0.05,
-                    ),
+                  left: screenWidth * 0.075,
+                  top: screenWidth * 0.05,
+                ),
                 child: images.isEmpty
                     ? ImagePalceholder(
                         imageError: false,
                         bookImage: forumImage,
-                        pickImages:  _pickImages,
+                        pickImages: _pickImages,
                         showErrorMessage: false,
                       )
                     : SizedBox(
-                        height:  screenHeight * 0.13,
-                        child: _buildImageGrid()),
+                        height: screenHeight * 0.13, child: _buildImageGrid()),
               ),
               SizedBox(
-                height:  screenHeight * 0.05,
+                height: screenHeight * 0.05,
               ),
               Center(
                 child: Column(
@@ -145,21 +230,18 @@ Future<void> _pickImages() async {
                               borderSide: BorderSide(color: Colors.grey),
                             ),
                             contentPadding: EdgeInsets.symmetric(
-                                horizontal:
-                                     screenWidth *
-                                        0.003,
-                                vertical:
-                                     screenWidth *
-                                        0.03),
+                                horizontal: screenWidth * 0.003,
+                                vertical: screenWidth * 0.03),
                           )),
                     ),
                     SizedBox(
-                      height:  screenHeight * 0.1,
+                      height: screenHeight * 0.1,
                     ),
-                     myelvatedbottom(
-                      onPressed: _submitForm,
-                      child:Text("Sumbit", style: TextStyle(fontSize: 18,color: Colors.white)),
-                     ),
+                    myelvatedbottom(
+                      onPressed: () => submitPost(context),
+                      child: Text("Sumbit",
+                          style: TextStyle(fontSize: 18, color: Colors.white)),
+                    ),
                   ],
                 ),
               )
@@ -184,12 +266,11 @@ Future<void> _pickImages() async {
   }
 
   Widget _buildImageItem(int index) {
-    
     final screenWidth = MediaQuery.of(context).size.width;
     return Stack(
       children: [
         Container(
-          width:  screenWidth * 0.25,
+          width: screenWidth * 0.25,
           margin: EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
@@ -221,7 +302,7 @@ Future<void> _pickImages() async {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: GestureDetector(
-        onTap:  _pickImages,
+        onTap: _pickImages,
         child: DottedBorder(
           color: Colors.grey,
           strokeWidth: 2,
@@ -229,8 +310,8 @@ Future<void> _pickImages() async {
           borderType: BorderType.RRect,
           radius: Radius.circular(10),
           child: SizedBox(
-            height:  screenHeight * 0.2,
-            width:  screenWidth * 0.25,
+            height: screenHeight * 0.2,
+            width: screenWidth * 0.25,
             child: Center(
               child: Icon(Icons.add, size: 40, color: Colors.grey),
             ),
